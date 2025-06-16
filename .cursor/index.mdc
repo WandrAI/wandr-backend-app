@@ -1,5 +1,74 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: Backend API project rules for FastAPI travel application
+globs: 
+alwaysApply: true
 ---
+
+# Wandr Backend API Development Rules
+
+## Project Architecture
+FastAPI-based travel API with PostgreSQL + Redis, providing:
+- **REST + GraphQL APIs** for flexible data access
+- **Real-time collaboration** via WebSockets and Redis pub/sub  
+- **AI-powered recommendations** with direct provider integration
+- **Location-based services** using PostGIS for geographic queries
+- **Background processing** with Celery for async operations
+
+## Application Structure
+```
+app/
+├── api/v1/          # REST API endpoints by domain
+├── graphql/         # GraphQL schema and resolvers
+├── models/          # SQLAlchemy database models
+├── schemas/         # Pydantic request/response models
+├── services/        # Business logic and external APIs
+├── core/           # Config, security, database setup
+├── workers/        # Celery background tasks
+└── websocket/      # WebSocket connection handlers
+```
+
+## Development Standards
+
+### FastAPI Patterns
+- **Always use async/await** for database and external API calls
+- **Dependency injection** for database sessions, auth, and services
+- **Pydantic models** for all request/response validation
+- **Type hints** throughout for IDE support and validation
+- **Route organization** by domain with clear URL patterns
+- **Error handling** with proper HTTP status codes and messages
+
+### Database Patterns
+- **SQLAlchemy async** for all database operations
+- **Alembic migrations** for schema changes
+- **Model relationships** properly defined with foreign keys
+- **Index optimization** for query performance
+- **Connection pooling** configured for production load
+
+### Code Quality
+- **Comprehensive docstrings** for all functions and classes  
+- **Error handling** with meaningful messages and proper logging
+- **Testing** with pytest for all business logic
+- **Environment-based configuration** for different deployment stages
+- **Security best practices** for authentication and data handling
+
+## Travel Domain Considerations
+- **Location data** with proper geographic indexing and queries
+- **Real-time collaboration** for group travel planning features
+- **AI integration** with travel-specific prompts and context
+- **Performance optimization** for mobile API consumption patterns
+- **Data modeling** for complex travel relationships (trips, users, locations)
+
+## AI Assistant Guidelines
+When implementing backend features:
+1. **Reference ADRs** in `/docs/adr/` for architectural decisions
+2. **Follow established patterns** from existing code structure  
+3. **Consider travel domain** requirements in API design
+4. **Implement proper authentication** and authorization checks
+5. **Use Redis caching** for performance-critical operations
+6. **Design for horizontal scaling** with stateless operations
+7. **Include comprehensive logging** for debugging and monitoring
+8. **Test database operations** with proper async patterns
+
+@docs/adr/
+@app/core/
+@app/models/
