@@ -9,7 +9,7 @@ Building a scalable backend API for a travel application with the following requ
 - **Real-time collaboration** for group travel planning
 - **AI-powered recommendations** with conversational interfaces
 - **Location-based services** with geographic queries
-- **High-performance APIs** for mobile consumption
+- **High-performance APIs** for client application consumption
 - **Secure authentication** and authorization
 - **Background task processing** for AI and data operations
 
@@ -24,8 +24,8 @@ Building a scalable backend API for a travel application with the following requ
 
 **Option 2: Pure GraphQL API** 
 - Pros: Flexible queries, single endpoint, real-time subscriptions
-- Cons: Caching complexity, learning curve, harder mobile caching
-- Travel Context: Great for complex travel queries but harder mobile optimization
+- Cons: Caching complexity, learning curve, harder client-side caching
+- Travel Context: Great for complex travel queries but harder client optimization
 
 **Option 3: Hybrid REST + GraphQL** ✅ **CHOSEN**
 - Pros: REST for simple CRUD, GraphQL for complex travel queries
@@ -61,8 +61,8 @@ Building a scalable backend API for a travel application with the following requ
 
 **Option 1: Session-based Authentication**
 - Pros: Server-side revocation, familiar pattern
-- Cons: Stateful, doesn't scale horizontally, poor mobile experience
-- Travel Context: Bad for mobile apps with intermittent connectivity
+- Cons: Stateful, doesn't scale horizontally, poor client experience
+- Travel Context: Bad for client apps with intermittent connectivity
 
 **Option 2: OAuth2 with External Provider Only**
 - Pros: No password management, leverages existing accounts
@@ -70,9 +70,9 @@ Building a scalable backend API for a travel application with the following requ
 - Travel Context: Problematic for travel apps in areas with poor connectivity
 
 **Option 3: JWT with FastAPI Security** ✅ **CHOSEN**
-- Pros: Stateless, mobile-friendly, offline capable, FastAPI integration
+- Pros: Stateless, client-friendly, offline capable, FastAPI integration
 - Cons: Token revocation complexity, larger payloads
-- Travel Context: Excellent for mobile travel apps with offline requirements
+- Travel Context: Excellent for travel client apps with offline requirements
 
 **Decision Rationale**: Travel applications are used in locations with poor connectivity. JWT tokens allow offline operation and stateless scaling while FastAPI Security provides excellent developer experience.
 

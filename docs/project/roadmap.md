@@ -1,7 +1,7 @@
 # Backend Roadmap
 
 ## Overview
-This roadmap outlines the planned development phases for the Wandr backend API, aligned with the mobile app development and business objectives.
+This roadmap outlines the planned development phases for the Wandr backend API, aligned with client application development and business objectives.
 
 ## Current Status: Phase 1 - Foundation ✅
 
@@ -260,14 +260,13 @@ This roadmap outlines the planned development phases for the Wandr backend API, 
 - Machine learning platform services
 
 ### Internal Dependencies
-- Mobile app development alignment
+- Client application development alignment
 - Design system and UX patterns
 - Customer support and operations setup
 - Legal and compliance framework
 - Business development partnerships
 
 ## Related Documents
-- [Mobile App Roadmap](../../mobile-app/docs/project/roadmap.md)
 - [API Design Principles](./api-design-principles.md)
 - [Backend Architecture](../adr/001-backend-architecture-decisions.md)
 - [Database Schema Design](../adr/002-database-schema-design.md)

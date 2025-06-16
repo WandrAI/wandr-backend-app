@@ -1,10 +1,10 @@
 # Wandr Backend API
 
-Backend services for powering AI-driven travel recommendations, social collaboration, and real-time travel assistance.
+Backend API services for powering AI-driven travel recommendations, social collaboration, and real-time travel assistance.
 
 ## 🎯 Project Overview
 
-The Wandr Backend API provides the server-side infrastructure for the Wandr mobile app, enabling:
+The Wandr Backend API provides the server-side infrastructure for travel applications, enabling:
 
 - **AI-Powered Travel Assistance**: Real-time conversational AI for travel planning and recommendations
 - **Hyper-Local Recommendations**: Location-based suggestions using travel APIs and machine learning
@@ -29,12 +29,12 @@ The Wandr Backend API provides the server-side infrastructure for the Wandr mobi
 - **Async/await** patterns for optimal performance
 - **Type-safe** with Pydantic models and type hints
 - **Travel-domain focused** with intuitive endpoint naming
-- **Mobile-optimized** responses with efficient data structures
+- **Client-optimized** responses with efficient data structures
 - **Real-time capabilities** for collaborative features
 
-## 📱 Mobile App Integration
+## 🔌 Client Integration
 
-This backend serves the [Wandr Mobile App](../mobile-app) built with React Native + Tamagui.
+This backend provides RESTful and GraphQL APIs for various client applications.
 
 ### **API Endpoints Overview**
 ```
@@ -53,7 +53,7 @@ This backend serves the [Wandr Mobile App](../mobile-app) built with React Nativ
 ├── Complex travel queries with nested data
 ├── Real-time collaboration subscriptions
 ├── Advanced search and filtering
-└── Mobile-optimized data fetching
+└── Optimized data fetching for client applications
 ```
 
 ## 🚀 Development Phases
@@ -147,7 +147,7 @@ Comprehensive documentation following the mobile app's proven patterns:
 - **Rate Limiting** to prevent abuse
 - **Input Validation** with Pydantic models
 - **SQL Injection Protection** via SQLAlchemy ORM
-- **CORS Configuration** for mobile app integration
+- **CORS Configuration** for client application integration
 - **Environment-based Secrets** management
 
 ## 🌍 Travel-Specific Considerations
@@ -155,7 +155,7 @@ Comprehensive documentation following the mobile app's proven patterns:
 - **Location Privacy**: Secure handling of user location data
 - **Multi-Currency**: Support for international travel
 - **Multi-Language**: API responses ready for localization
-- **Offline Sync**: APIs designed for offline mobile app usage
+- **Offline Sync**: APIs designed for offline-capable client applications
 - **Real-Time Collaboration**: WebSocket support for group planning
 - **Travel Data Integration**: Structured for external travel APIs
 

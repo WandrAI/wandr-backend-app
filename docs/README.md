@@ -23,8 +23,8 @@ High-level project documentation:
 - **roadmap.md** - Backend feature development roadmap
 
 ## Related Documentation
-- Frontend documentation: `../mobile-app/docs/`
 - API documentation: Generated via FastAPI `/docs` endpoint
+- Client integration guides: Available per client implementation
 
 ## Quick Start
 For development setup and patterns, start with:

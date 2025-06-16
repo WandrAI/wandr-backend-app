@@ -8,7 +8,7 @@ This document outlines the core design principles that guide the development of 
 ### 1. Travel-First Design
 Every API endpoint should prioritize the travel use case and user journey:
 - **Location-aware**: APIs should leverage geographic context
-- **Mobile-optimized**: Responses optimized for mobile bandwidth and offline scenarios
+- **Client-optimized**: Responses optimized for various client bandwidth and offline scenarios
 - **Real-time capable**: Support for real-time updates (notifications, booking changes)
 - **Collaborative**: Enable social features and group travel planning
 
@@ -168,9 +168,9 @@ Errors should be helpful for debugging and user experience:
 - **Compression**: Enable gzip compression for all text responses
 - **CDN-friendly**: Design responses to be cacheable by CDN
 
-### Mobile-First Performance
-- **Payload optimization**: Minimize response sizes for mobile bandwidth
-- **Offline support**: Design APIs to support offline-first mobile apps
+### Client-First Performance
+- **Payload optimization**: Minimize response sizes for various client bandwidth constraints
+- **Offline support**: Design APIs to support offline-first client applications
 - **Background sync**: Support background data synchronization
 - **Progressive enhancement**: Core functionality works with minimal data
 
