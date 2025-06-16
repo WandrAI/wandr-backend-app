@@ -15,14 +15,14 @@ The Wandr Backend API provides the server-side infrastructure for the Wandr mobi
 ## 🏗️ Architecture
 
 ### **Tech Stack**
-- **Framework**: FastAPI (Python 3.11+)
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **Authentication**: JWT with FastAPI Security
-- **Real-Time**: WebSockets for live collaboration
-- **AI Integration**: OpenAI/Anthropic APIs for conversational assistance
-- **Caching**: Redis for session management and caching
-- **Task Queue**: Celery with Redis for async processing
-- **Documentation**: Automatic OpenAPI/Swagger documentation
+- **Framework**: FastAPI (Python 3.11+) with async/await patterns
+- **API Design**: RESTful APIs + GraphQL for complex travel queries
+- **Database**: PostgreSQL with PostGIS + Redis for caching/sessions
+- **Authentication**: JWT with FastAPI Security utilities
+- **Real-Time**: WebSockets with Redis pub/sub for collaboration
+- **AI Integration**: Direct OpenAI/Anthropic APIs with service abstraction
+- **Task Queue**: Celery with Redis for background processing
+- **Documentation**: Automatic OpenAPI/Swagger + comprehensive ADRs
 
 ### **API Design Philosophy**
 - **RESTful APIs** with clear resource endpoints
@@ -38,15 +38,22 @@ This backend serves the [Wandr Mobile App](../mobile-app) built with React Nativ
 
 ### **API Endpoints Overview**
 ```
-/api/v1/
+/api/v1/ (REST API)
 ├── auth/              # Authentication & user management
 ├── users/             # User profiles & preferences  
-├── travel/            # Travel recommendations & data
+├── trips/             # Trip CRUD operations
+├── recommendations/   # Travel recommendations & data
 ├── groups/            # Group trip management
 ├── ai/                # AI assistant & chat interface
 ├── locations/         # Location-based services
 ├── social/            # Social features & sharing
 └── notifications/     # Push notifications & alerts
+
+/graphql (GraphQL API)
+├── Complex travel queries with nested data
+├── Real-time collaboration subscriptions
+├── Advanced search and filtering
+└── Mobile-optimized data fetching
 ```
 
 ## 🚀 Development Phases
