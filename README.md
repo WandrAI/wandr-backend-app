@@ -1,6 +1,6 @@
 # Wandr Backend API
 
-> Backend services for the Wandr travel app - powering AI-driven travel recommendations, social collaboration, and real-time travel assistance.
+Backend services for powering AI-driven travel recommendations, social collaboration, and real-time travel assistance.
 
 ## 🎯 Project Overview
 
@@ -158,22 +158,6 @@ Comprehensive documentation following the mobile app's proven patterns:
 - **Offline Sync**: APIs designed for offline mobile app usage
 - **Real-Time Collaboration**: WebSocket support for group planning
 - **Travel Data Integration**: Structured for external travel APIs
-
-## 🤝 Contributing
-
-This backend project follows the same high standards as the mobile app:
-
-1. **Follow FastAPI best practices** and async patterns
-2. **Use type hints** and Pydantic models for all APIs
-3. **Write comprehensive tests** for travel-critical functionality
-4. **Document APIs** with clear travel domain examples
-5. **Consider mobile app needs** in all API design decisions
-
-## 📞 Related Projects
-
-- **Mobile App**: `../mobile-app/` - React Native + Tamagui frontend
-- **Shared Types**: Travel domain types shared between frontend/backend
-- **AI Models**: Custom travel recommendation models and training
 
 ---
 
