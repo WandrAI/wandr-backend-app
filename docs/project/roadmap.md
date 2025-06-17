@@ -14,12 +14,12 @@ This roadmap outlines the planned development phases for the Wandr backend API, 
 - **Development Environment**: Docker setup, testing framework, and CI/CD pipeline
 
 ### Phase 1 Deliverables
-- [x] Project setup and development environment
-- [x] User authentication and authorization
-- [x] Core travel data models (destinations, trips, activities)
-- [x] RESTful API endpoints for basic operations
-- [x] Database schema and migrations
-- [x] API documentation and testing setup
+- [ ] Project setup and development environment
+- [ ] User authentication and authorization
+- [ ] Core travel data models (destinations, trips, activities)
+- [ ] RESTful API endpoints for basic operations
+- [ ] Database schema and migrations
+- [ ] API documentation and testing setup
 
 ## Phase 2 - Enhanced Travel Features 🚧
 
