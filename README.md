@@ -15,14 +15,14 @@ The Wandr Backend API provides the server-side infrastructure for travel applica
 ## 🏗️ Architecture
 
 ### **Tech Stack**
-- **Framework**: FastAPI (Python 3.11+) with async/await patterns
-- **API Design**: RESTful APIs + GraphQL for complex travel queries
-- **Database**: PostgreSQL with PostGIS + Redis for caching/sessions
-- **Authentication**: JWT with FastAPI Security utilities
-- **Real-Time**: WebSockets with Redis pub/sub for collaboration
-- **AI Integration**: Direct OpenAI/Anthropic APIs with service abstraction
-- **Task Queue**: Celery with Redis for background processing
-- **Documentation**: Automatic OpenAPI/Swagger + comprehensive ADRs
+- **Framework**: FastAPI (Python 3.12) with async/await patterns
+- **Database**: SQLite (development) / PostgreSQL with PostGIS (production)
+- **Authentication**: JWT with FastAPI Security utilities + bcrypt
+- **Data Validation**: Pydantic v2 with type safety
+- **Migrations**: Alembic for database version control
+- **API Documentation**: Automatic OpenAPI/Swagger + ReDoc
+- **Development**: Hot reload, async SQLAlchemy 2.0
+- **Future**: GraphQL, WebSockets, Redis, Celery, AI integration
 
 ### **API Design Philosophy**
 - **RESTful APIs** with clear resource endpoints
@@ -58,14 +58,14 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 
 ## 🚀 Development Phases
 
-### **Phase 1 - Foundation** ⚡ *Current*
+### **Phase 1 - Foundation** ✅ *Completed*
 - [x] Project setup with FastAPI
 - [x] Documentation structure
 - [x] Cursor rules for AI assistance
-- [ ] Database models and migrations
-- [ ] Authentication system
-- [ ] Basic user management APIs
-- [ ] Development environment setup
+- [x] Database models and migrations
+- [x] Authentication system (JWT)
+- [x] Basic user management APIs
+- [x] Development environment setup
 
 ### **Phase 2 - Core Travel APIs** 
 - [ ] AI chat interface and conversation handling
@@ -91,39 +91,93 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 ## 🛠️ Getting Started
 
 ### **Prerequisites**
-- Python 3.11+
-- PostgreSQL 14+
-- Redis 6+
+- Python 3.11+ (recommended: 3.12)
 - Git
 
-### **Installation** *(Coming Soon)*
-```bash
-# Clone the repository
-git clone <repository-url>
-cd wandr-backend-app
+*Note: For development, the project uses SQLite (no additional database setup required). For production, PostgreSQL and Redis are recommended.*
 
-# Setup virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### **Quick Start**
 
-# Install dependencies
-pip install -r requirements.txt
+1. **Clone and setup the project:**
+   ```bash
+   # Clone the repository
+   git clone <repository-url>
+   cd wandr-backend-app
+   
+   # Setup virtual environment
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
-# Setup environment variables
-cp .env.example .env
-# Edit .env with your configuration
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# Run database migrations
-alembic upgrade head
+3. **Setup environment (optional for development):**
+   ```bash
+   # Copy environment template (optional - defaults work for development)
+   cp .env.example .env
+   # Edit .env if you want to customize settings
+   ```
 
-# Start development server
-uvicorn app.main:app --reload
-```
+4. **Run database migrations:**
+   ```bash
+   alembic upgrade head
+   ```
+
+5. **Start the development server:**
+   
+   **Option 1: FastAPI CLI (recommended):**
+   ```bash
+   fastapi dev app/main.py --port 8000
+   ```
+   
+   **Option 2: Uvicorn:**
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+### **🎉 You're Ready!**
+
+The API server will start at **http://localhost:8000**
 
 ### **API Documentation**
 Once running, visit:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Interactive API Docs (Swagger)**: http://localhost:8000/docs
+- **Alternative Docs (ReDoc)**: http://localhost:8000/redoc
+- **Health Check**: http://localhost:8000/health
+
+### **Try the API**
+
+**Register a new user:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "username": "testuser", 
+    "password": "testpassword123"
+  }'
+```
+
+**Login and get a token:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "testpassword123"
+  }'
+```
+
+### **Development Features**
+- ✅ **Hot Reload**: Code changes automatically restart the server
+- ✅ **Auto Documentation**: Interactive API docs at `/docs`
+- ✅ **JWT Authentication**: Secure user registration and login
+- ✅ **SQLite Database**: Automatically created (`wandr.db`)
+- ✅ **Type Safety**: Full Pydantic validation
+- ✅ **Error Handling**: Comprehensive HTTP error responses
 
 ## 📚 Documentation
 
