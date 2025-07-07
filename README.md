@@ -67,11 +67,13 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 - [x] Basic user management APIs
 - [x] Development environment setup
 
-### **Phase 2 - Core Travel APIs** 
+### **Phase 2 - Core Travel APIs** 🔄 *In Progress*
+- [x] Trip management CRUD operations
+- [x] User profile management
+- [x] Collaborative trip planning features
 - [ ] AI chat interface and conversation handling
 - [ ] Travel recommendation engine
 - [ ] Location-based services integration
-- [ ] User preferences and personalization
 - [ ] External travel API integrations
 
 ### **Phase 3 - Social & Collaboration**
@@ -171,10 +173,32 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
   }'
 ```
 
+**Create a trip:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/trips" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "European Adventure",
+    "description": "2-week trip across Europe",
+    "start_date": "2024-06-01",
+    "end_date": "2024-06-14"
+  }'
+```
+
+**List your trips:**
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  http://localhost:8000/api/v1/trips
+```
+
 ### **Development Features**
 - ✅ **Hot Reload**: Code changes automatically restart the server
 - ✅ **Auto Documentation**: Interactive API docs at `/docs`
 - ✅ **JWT Authentication**: Secure user registration and login
+- ✅ **Trip Management**: Complete CRUD operations with collaboration
+- ✅ **User Profiles**: Profile management and public user info
+- ✅ **Permission System**: Role-based trip access (organizer/participant/viewer)
 - ✅ **SQLite Database**: Automatically created (`wandr.db`)
 - ✅ **Type Safety**: Full Pydantic validation
 - ✅ **Error Handling**: Comprehensive HTTP error responses

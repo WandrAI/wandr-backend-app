@@ -4,7 +4,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.core.config import settings
 from app.core.exceptions import setup_exception_handlers
-from app.api.v1 import auth
+from app.api.v1 import auth, trips, users
 
 # Create FastAPI application
 app = FastAPI(
@@ -13,6 +13,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
+    redirect_slashes=False,  # Disable automatic slash redirects
 )
 
 # Security middleware
@@ -34,6 +35,8 @@ setup_exception_handlers(app)
 
 # Include API routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(trips.router, prefix="/api/v1/trips", tags=["Trips"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 
 # Health check endpoint
 @app.get("/")
