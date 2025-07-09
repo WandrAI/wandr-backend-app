@@ -1,0 +1,121 @@
+# Docker Compose for Wandr Backend API - Development Environment
+
+services:
+  # FastAPI application
+  app:
+    build:
+      context: .
+      target: development
+    container_name: wandr-backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://wandr_user:wandr_password@db:5432/wandr_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=true
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: fastapi dev app/main.py --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: wandr-postgres-dev
+    environment:
+      - POSTGRES_DB=wandr_db
+      - POSTGRES_USER=wandr_user
+      - POSTGRES_PASSWORD=wandr_password
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wandr_user -d wandr_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Redis for caching and background tasks
+  redis:
+    image: redis:7-alpine
+    container_name: wandr-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Database migrations
+  migrate:
+    build:
+      context: .
+      target: development
+    container_name: wandr-migrate-dev
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://wandr_user:wandr_password@db:5432/wandr_db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+    volumes:
+      - .:/app
+    restart: "no"
+
+  # Test runner
+  test:
+    build:
+      context: .
+      target: development
+    container_name: wandr-test-dev
+    environment:
+      DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+      REDIS_URL: "redis://redis:6379/1"
+      SECRET_KEY: "test-secret-key"
+      DEBUG: "true"
+    depends_on:
+      - redis
+    command: python -m pytest tests/ -v --cov=app --cov-report=html --cov-report=term-missing
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+    restart: "no"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: wandr-network
