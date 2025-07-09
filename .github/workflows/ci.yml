@@ -52,7 +52,7 @@ jobs:
           context: .
           target: development
           push: false
-          tags: wandr-backend:test
+          tags: wandr-backend:dev
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -61,7 +61,7 @@ jobs:
           docker run --rm \
             --network host \
             -e DATABASE_URL=postgresql+asyncpg://wandr_user:wandr_password@localhost:5432/wandr_test_db \
-            wandr-backend:test \
+            wandr-backend:dev \
             alembic upgrade head
 
       - name: Run tests with coverage
@@ -73,7 +73,7 @@ jobs:
             -e SECRET_KEY=test-secret-key \
             -e DEBUG=true \
             -v ${{ github.workspace }}:/app \
-            wandr-backend:test \
+            wandr-backend:dev \
             python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
@@ -100,7 +100,7 @@ jobs:
           context: .
           target: development
           push: false
-          tags: wandr-backend:lint
+          tags: wandr-backend:dev
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -108,21 +108,21 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
-            wandr-backend:lint \
+            wandr-backend:dev \
             ruff format --check .
 
       - name: Run linting
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
-            wandr-backend:lint \
+            wandr-backend:dev \
             ruff check .
 
       - name: Run type checking
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
-            wandr-backend:lint \
+            wandr-backend:dev \
             mypy .
 
   security:
