@@ -13,7 +13,7 @@
 
 ## 📊 Current Status & Todo List
 
-### ✅ **Completed Tasks (9/12)**
+### ✅ **Completed Tasks (10/12)**
 - [x] **Core dependencies** - FastAPI, SQLAlchemy 2.0, Pydantic, Alembic, JWT libraries
 - [x] **Database configuration** - Async SQLAlchemy with SQLite (dev) / PostgreSQL (prod) support
 - [x] **Core models** - User, UserProfile, Trip, TripMember, TripActivity, Location
@@ -23,15 +23,38 @@
 - [x] **Pydantic schemas** - Type-safe request/response models with comprehensive validation
 - [x] **Error handling** - Custom exception handlers with consistent HTTP responses
 - [x] **Basic CRUD endpoints** - Complete trip and user management APIs with collaboration features
+- [x] **Docker environment** - Complete containerized development setup with PostgreSQL and Redis
 
-### ⏳ **Pending (3/12)**
+### ⏳ **Pending (2/12)**
 - [ ] **Testing framework** - pytest setup with async test patterns
 - [ ] **Location services** - Geographic data handling with PostGIS
-- [ ] **Docker environment** - Containerized development setup
 
 ## 🚀 Development Workflow
 
 ### **Quick Start Commands**
+
+**Docker Development (Recommended):**
+```bash
+# Start complete development environment
+./scripts/docker-dev.sh up
+
+# Run database migrations
+./scripts/docker-dev.sh migrate
+
+# View logs
+./scripts/docker-dev.sh logs
+
+# Run tests
+./scripts/docker-dev.sh test
+
+# Open container shell
+./scripts/docker-dev.sh shell
+
+# Stop environment
+./scripts/docker-dev.sh down
+```
+
+**Local Development:**
 ```bash
 # Activate environment
 source .venv/bin/activate
@@ -82,8 +105,10 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:8000/api/v1/tri
 - **Database**: SQLAlchemy 2.0 async + Alembic migrations
 - **Authentication**: JWT tokens + bcrypt password hashing
 - **Validation**: Pydantic v2 with type safety
-- **Development DB**: SQLite (auto-created as `wandr.db`)
-- **Production DB**: PostgreSQL with PostGIS (future)
+- **Development DB**: PostgreSQL with PostGIS (Docker) / SQLite (local)
+- **Production DB**: PostgreSQL with PostGIS
+- **Caching**: Redis for caching and background tasks
+- **Containerization**: Docker with multi-stage builds and docker-compose
 
 ### **Project Structure**
 ```
@@ -123,22 +148,40 @@ app/
 - Database model tests
 - Integration tests for API endpoints
 
-### **3. Location Services** (Future)
+**Docker Testing**: Use `./scripts/docker-dev.sh test` to run tests in containerized environment
+
+### **2. Location Services** (Future)
 **Task**: Implement geographic data handling
 **Requirements**:
 - Location search and filtering
 - Distance calculations
-- PostGIS integration for production
+- PostGIS integration (already available in Docker environment)
 
 ## 🧪 Testing Current Implementation
 
 ### **Verify Authentication Flow**
+
+**Using Docker:**
+1. **Start environment**: `./scripts/docker-dev.sh up`
+2. **Run migrations**: `./scripts/docker-dev.sh migrate`
+3. **Register user**: Use curl command above or Swagger UI at `/docs`
+4. **Login**: Get JWT token from login response
+5. **Access profile**: Use token in Authorization header: `Bearer <token>`
+
+**Using Local Development:**
 1. **Start server**: `fastapi dev app/main.py --port 8000`
 2. **Register user**: Use curl command above or Swagger UI at `/docs`
 3. **Login**: Get JWT token from login response
 4. **Access profile**: Use token in Authorization header: `Bearer <token>`
 
 ### **Database Verification**
+
+**Docker Environment:**
+- **Check database**: Connect to PostgreSQL at `localhost:5432`
+- **Verify tables**: Use `./scripts/docker-dev.sh shell` then `psql` commands
+- **Test migrations**: `./scripts/docker-dev.sh migrate` should run without errors
+
+**Local Environment:**
 - **Check database**: SQLite file `wandr.db` should exist
 - **Verify tables**: User, user_profiles, trips, trip_members, etc.
 - **Test migrations**: `alembic upgrade head` should run without errors
@@ -146,6 +189,20 @@ app/
 ## 🔧 Common Development Tasks
 
 ### **Database Reset (Development)**
+
+**Docker Environment:**
+```bash
+# Quick reset (removes all data)
+./scripts/docker-dev.sh reset-db
+
+# Manual reset
+./scripts/docker-dev.sh down
+docker volume rm wandr-backend-app_postgres_data
+./scripts/docker-dev.sh up
+./scripts/docker-dev.sh migrate
+```
+
+**Local Environment:**
 ```bash
 # Quick reset (removes all data)
 rm wandr.db

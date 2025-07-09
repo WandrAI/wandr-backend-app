@@ -92,11 +92,70 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 
 ## 🛠️ Getting Started
 
+### **🐳 Docker Setup (Recommended)**
+
+The fastest way to get started is using Docker, which provides a complete development environment.
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd wandr-backend-app
+   ```
+
+2. **Start the development environment:**
+   ```bash
+   ./scripts/docker-dev.sh up
+   ```
+
+3. **Run database migrations:**
+   ```bash
+   ./scripts/docker-dev.sh migrate
+   ```
+
+4. **🎉 You're Ready!**
+   - API: http://localhost:8000
+   - Interactive API docs: http://localhost:8000/docs
+   - Database: localhost:5432 (PostgreSQL)
+   - Redis: localhost:6379
+
+#### **Essential Docker Commands**
+```bash
+# Start development environment
+./scripts/docker-dev.sh up
+
+# Stop development environment
+./scripts/docker-dev.sh down
+
+# View logs
+./scripts/docker-dev.sh logs
+
+# Run tests
+./scripts/docker-dev.sh test
+
+# Open shell in container
+./scripts/docker-dev.sh shell
+
+# Reset database (destroys data)
+./scripts/docker-dev.sh reset-db
+
+# See all available commands
+./scripts/docker-dev.sh help
+```
+
+### **💻 Local Development Setup**
+
 ### **Prerequisites**
+
+**Option 1: Docker (Recommended)**
+- Docker Engine 20.10+
+- Docker Compose 2.0+
+- At least 4GB RAM available for containers
+
+**Option 2: Local Development**
 - Python 3.11+ (recommended: 3.12)
 - Git
 
-*Note: For development, the project uses SQLite (no additional database setup required). For production, PostgreSQL and Redis are recommended.*
+*Note: Docker provides a complete environment with PostgreSQL and Redis. For local development, the project uses SQLite (no additional database setup required).*
 
 ### **Quick Start**
 
@@ -199,7 +258,9 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
 - ✅ **Trip Management**: Complete CRUD operations with collaboration
 - ✅ **User Profiles**: Profile management and public user info
 - ✅ **Permission System**: Role-based trip access (organizer/participant/viewer)
-- ✅ **SQLite Database**: Automatically created (`wandr.db`)
+- ✅ **Docker Environment**: Complete containerized development setup
+- ✅ **PostgreSQL Database**: Production-ready database with PostGIS
+- ✅ **Redis Caching**: Fast caching and background task support
 - ✅ **Type Safety**: Full Pydantic validation
 - ✅ **Error Handling**: Comprehensive HTTP error responses
 
@@ -210,7 +271,9 @@ Comprehensive documentation following the mobile app's proven patterns:
 - **Architecture Decision Records**: `/docs/adr/` - Backend architectural decisions
 - **API Specifications**: `/docs/api/` - Detailed endpoint documentation  
 - **Development Guide**: `/docs/development/` - Setup and development patterns
+- **Docker Setup**: `DOCKER.md` - Complete Docker development and deployment guide
 - **Deployment Guide**: `/docs/deployment/` - Production deployment instructions
+- **Development Context**: `CLAUDE.md` - AI assistant context and quick reference
 
 ## 🧪 Testing Strategy
 
