@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, Dict, Any, List
 from datetime import date, datetime
 from enum import Enum
@@ -24,18 +24,31 @@ class TripBase(BaseModel):
     """Base trip schema."""
     title: str = Field(..., min_length=1, max_length=200, description="Trip title")
     description: Optional[str] = Field(None, max_length=1000, description="Trip description")
+    destination: Optional[str] = Field(None, max_length=200, description="Trip destination")
     start_date: Optional[date] = Field(None, description="Trip start date")
     end_date: Optional[date] = Field(None, description="Trip end date")
     
-    @validator('end_date')
-    def end_date_after_start_date(cls, v, values):
-        if v and values.get('start_date') and v < values['start_date']:
-            raise ValueError('End date must be after start date')
+    @field_validator('end_date')
+    @classmethod
+    def end_date_after_start_date(cls, v, info):
+        if v and info.data.get('start_date'):
+            start_date = info.data['start_date']
+            # Convert string to date if needed
+            if isinstance(start_date, str):
+                from datetime import datetime
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            if isinstance(v, str):
+                from datetime import datetime
+                v = datetime.strptime(v, '%Y-%m-%d').date()
+            if v < start_date:
+                raise ValueError('End date must be after start date')
         return v
 
 
 class TripCreate(TripBase):
     """Schema for creating a trip."""
+    start_date: date = Field(..., description="Trip start date")
+    end_date: date = Field(..., description="Trip end date") 
     trip_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Additional trip data")
 
 
@@ -48,10 +61,20 @@ class TripUpdate(BaseModel):
     status: Optional[TripStatus] = None
     trip_data: Optional[Dict[str, Any]] = None
     
-    @validator('end_date')
-    def end_date_after_start_date(cls, v, values):
-        if v and values.get('start_date') and v < values['start_date']:
-            raise ValueError('End date must be after start date')
+    @field_validator('end_date')
+    @classmethod
+    def end_date_after_start_date(cls, v, info):
+        if v and info.data.get('start_date'):
+            start_date = info.data['start_date']
+            # Convert string to date if needed
+            if isinstance(start_date, str):
+                from datetime import datetime
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            if isinstance(v, str):
+                from datetime import datetime
+                v = datetime.strptime(v, '%Y-%m-%d').date()
+            if v < start_date:
+                raise ValueError('End date must be after start date')
         return v
 
 
