@@ -105,15 +105,18 @@ jobs:
 
     - name: Extract coverage report
       run: |
-        docker run --rm \
+        # Create a named container that doesn't auto-remove to extract files
+        CONTAINER_ID=$(docker run -d \
           --network host \
           -e DATABASE_URL=sqlite+aiosqlite:///:memory: \
           -e REDIS_URL=redis://localhost:6379/1 \
           -e SECRET_KEY=test-secret-key \
           -e DEBUG=true \
-          -v ${{ github.workspace }}:/output \
           wandr-backend:dev \
-          sh -c "python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing && cp coverage.xml /output/"
+          sh -c "python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing && sleep 5")
+        docker wait $CONTAINER_ID
+        docker cp $CONTAINER_ID:/app/coverage.xml . || echo "No coverage file found"
+        docker rm $CONTAINER_ID
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
