@@ -8,21 +8,19 @@ This module provides:
 - Common test utilities
 """
 
-import asyncio
 import os
-import pytest
-import pytest_asyncio
+
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+import pytest
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.main import app
-from app.core.database import get_db, Base
-from app.core.config import settings
+from app.core.database import Base, get_db
 from app.core.security import create_access_token
+from app.main import app
 from app.models.user import User, UserProfile
-
 
 # Test database URL - use in-memory SQLite for speed
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -52,7 +50,7 @@ TestSessionLocal = async_sessionmaker(
 async def db_session():
     """
     Create a fresh database session for each test.
-    
+
     This fixture:
     1. Creates all tables in the test database
     2. Provides a clean session for the test
@@ -62,12 +60,12 @@ async def db_session():
     # Create all tables
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     # Create session
     async with TestSessionLocal() as session:
         yield session
         await session.rollback()
-    
+
     # Drop all tables for cleanup
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -78,15 +76,16 @@ async def test_client(db_session: AsyncSession):
     """
     Create a test client with database dependency override.
     """
+
     # Override the database dependency
     async def override_get_db():
         yield db_session
-    
+
     app.dependency_overrides[get_db] = override_get_db
-    
+
     async with AsyncClient(app=app, base_url="http://testserver") as client:
         yield client
-    
+
     # Clean up dependency override
     app.dependency_overrides.clear()
 
@@ -103,12 +102,12 @@ def sync_test_client():
 async def test_user(db_session: AsyncSession):
     """
     Create a test user in the database.
-    
+
     Returns:
         User: The created test user
     """
     from app.core.security import get_password_hash
-    
+
     # Create user
     hashed_password = get_password_hash("testpassword123")
     user = User(
@@ -120,7 +119,7 @@ async def test_user(db_session: AsyncSession):
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
-    
+
     # Create user profile
     profile = UserProfile(
         user_id=user.id,
@@ -130,7 +129,7 @@ async def test_user(db_session: AsyncSession):
     db_session.add(profile)
     await db_session.commit()
     await db_session.refresh(profile)
-    
+
     return user
 
 
@@ -138,10 +137,10 @@ async def test_user(db_session: AsyncSession):
 async def test_user_token(test_user: User):
     """
     Create a JWT token for the test user.
-    
+
     Args:
         test_user: The test user fixture
-        
+
     Returns:
         str: JWT access token for the test user
     """
@@ -152,11 +151,11 @@ async def test_user_token(test_user: User):
 async def authenticated_client(test_client: AsyncClient, test_user_token: str):
     """
     Create an authenticated test client with Authorization header.
-    
+
     Args:
         test_client: The test client fixture
         test_user_token: JWT token for the test user
-        
+
     Returns:
         AsyncClient: Test client with authentication headers set
     """
@@ -168,12 +167,12 @@ async def authenticated_client(test_client: AsyncClient, test_user_token: str):
 async def second_test_user(db_session: AsyncSession):
     """
     Create a second test user for testing user interactions.
-    
+
     Returns:
         User: The created second test user
     """
     from app.core.security import get_password_hash
-    
+
     # Create second user
     hashed_password = get_password_hash("secondpassword123")
     user = User(
@@ -185,7 +184,7 @@ async def second_test_user(db_session: AsyncSession):
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
-    
+
     # Create user profile
     profile = UserProfile(
         user_id=user.id,
@@ -195,40 +194,37 @@ async def second_test_user(db_session: AsyncSession):
     db_session.add(profile)
     await db_session.commit()
     await db_session.refresh(profile)
-    
+
     return user
 
 
 # Test data factories
 class TestDataFactory:
     """Factory class for creating test data."""
-    
+
     @staticmethod
     def user_registration_data():
         """Valid user registration data."""
         return {
             "email": "newuser@example.com",
             "username": "newuser",
-            "password": "newpassword123"
+            "password": "newpassword123",
         }
-    
+
     @staticmethod
     def user_login_data():
         """Valid user login data."""
-        return {
-            "email": "test@example.com",
-            "password": "testpassword123"
-        }
-    
+        return {"email": "test@example.com", "password": "testpassword123"}
+
     @staticmethod
     def invalid_user_data():
         """Invalid user registration data for testing validation."""
         return {
             "email": "invalid-email",
             "username": "",
-            "password": "123"  # Too short
+            "password": "123",  # Too short
         }
-    
+
     @staticmethod
     def trip_data():
         """Valid trip creation data."""
@@ -237,16 +233,16 @@ class TestDataFactory:
             "description": "A test trip for testing purposes",
             "start_date": "2024-07-01",
             "end_date": "2024-07-15",
-            "destination": "Test Destination"
+            "destination": "Test Destination",
         }
-    
+
     @staticmethod
     def trip_update_data():
         """Valid trip update data."""
         return {
             "title": "Updated Test Trip",
             "description": "An updated test trip",
-            "destination": "Updated Destination"
+            "destination": "Updated Destination",
         }
 
 

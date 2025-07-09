@@ -1,6 +1,6 @@
 ---
 description: Backend API project rules for FastAPI travel application
-globs: 
+globs:
 alwaysApply: true
 ---
 
@@ -9,7 +9,7 @@ alwaysApply: true
 ## Project Architecture
 FastAPI-based travel API with PostgreSQL + Redis, providing:
 - **REST + GraphQL APIs** for flexible data access
-- **Real-time collaboration** via WebSockets and Redis pub/sub  
+- **Real-time collaboration** via WebSockets and Redis pub/sub
 - **AI-powered recommendations** with direct provider integration
 - **Location-based services** using PostGIS for geographic queries
 - **Background processing** with Celery for async operations
@@ -45,7 +45,7 @@ app/
 - **Connection pooling** configured for production load
 
 ### Code Quality
-- **Comprehensive docstrings** for all functions and classes  
+- **Comprehensive docstrings** for all functions and classes
 - **Error handling** with meaningful messages and proper logging
 - **Testing** with pytest for all business logic
 - **Environment-based configuration** for different deployment stages
@@ -61,7 +61,7 @@ app/
 ## AI Assistant Guidelines
 When implementing backend features:
 1. **Reference ADRs** in `/docs/adr/` for architectural decisions
-2. **Follow established patterns** from existing code structure  
+2. **Follow established patterns** from existing code structure
 3. **Consider travel domain** requirements in API design
 4. **Implement proper authentication** and authorization checks
 5. **Use Redis caching** for performance-critical operations

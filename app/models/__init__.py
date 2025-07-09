@@ -1,10 +1,10 @@
-from app.models.user import User, UserProfile
-from app.models.trip import Trip, TripMember, TripActivity
 from app.models.location import Location
+from app.models.trip import Trip, TripActivity, TripMember
+from app.models.user import User, UserProfile
 
 __all__ = [
     "User",
-    "UserProfile", 
+    "UserProfile",
     "Trip",
     "TripMember",
     "TripActivity",

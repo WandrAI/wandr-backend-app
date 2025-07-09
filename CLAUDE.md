@@ -3,6 +3,7 @@
 ## 🎯 Project Overview
 
 **Wandr Backend API** is a modern FastAPI-based travel application backend providing:
+
 - JWT-based user authentication and management
 - Travel domain models (Users, Trips, Locations) with collaborative features
 - RESTful APIs with automatic OpenAPI documentation
@@ -14,6 +15,7 @@
 ## 📊 Current Status & Todo List
 
 ### ✅ **Completed Tasks (10/12)**
+
 - [x] **Core dependencies** - FastAPI, SQLAlchemy 2.0, Pydantic, Alembic, JWT libraries
 - [x] **Database configuration** - Async SQLAlchemy with SQLite (dev) / PostgreSQL (prod) support
 - [x] **Core models** - User, UserProfile, Trip, TripMember, TripActivity, Location
@@ -26,6 +28,7 @@
 - [x] **Docker environment** - Complete containerized development setup with PostgreSQL and Redis
 
 ### ⏳ **Pending (2/12)**
+
 - [ ] **Testing framework** - pytest setup with async test patterns
 - [ ] **Location services** - Geographic data handling with PostGIS
 
@@ -34,6 +37,7 @@
 ### **Quick Start Commands**
 
 **Docker Development (Recommended):**
+
 ```bash
 # Start complete development environment
 ./scripts/docker-dev.sh up
@@ -47,6 +51,15 @@
 # Run tests
 ./scripts/docker-dev.sh test
 
+# Format code (Black + Ruff)
+./scripts/docker-dev.sh format
+
+# Run linting (Ruff + mypy)
+./scripts/docker-dev.sh lint
+
+# Check code quality (no changes)
+./scripts/docker-dev.sh check
+
 # Open container shell
 ./scripts/docker-dev.sh shell
 
@@ -55,9 +68,13 @@
 ```
 
 **Local Development:**
+
 ```bash
 # Activate environment
 source .venv/bin/activate
+
+# Install/update dependencies
+pip install -r requirements.txt
 
 # Start development server (choose one)
 fastapi dev app/main.py --port 8000        # FastAPI CLI (recommended)
@@ -66,9 +83,18 @@ uvicorn app.main:app --reload --port 8000  # Uvicorn (traditional)
 # Database operations
 alembic upgrade head                        # Apply migrations
 alembic revision --autogenerate -m "msg"   # Create new migration
+
+# Code quality
+black .                                     # Format code
+ruff check --fix .                          # Fix linting issues
+ruff check .                                # Check linting
+mypy .                                      # Type checking
+pre-commit install                          # Install Git hooks
+pre-commit run --all-files                  # Run all hooks
 ```
 
 ### **API Testing**
+
 ```bash
 # Health check
 curl http://localhost:8000/health
@@ -94,6 +120,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:8000/api/v1/tri
 ```
 
 ### **Documentation Access**
+
 - **Interactive API Docs**: http://localhost:8000/docs
 - **Alternative Docs**: http://localhost:8000/redoc
 - **Architecture Docs**: `/docs/adr/` directory
@@ -101,6 +128,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:8000/api/v1/tri
 ## 🏗️ Architecture Context
 
 ### **Tech Stack**
+
 - **Framework**: FastAPI with async/await patterns
 - **Database**: SQLAlchemy 2.0 async + Alembic migrations
 - **Authentication**: JWT tokens + bcrypt password hashing
@@ -111,6 +139,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:8000/api/v1/tri
 - **Containerization**: Docker with multi-stage builds and docker-compose
 
 ### **Project Structure**
+
 ```
 app/
 ├── __init__.py              # Package marker
@@ -132,6 +161,7 @@ app/
 ```
 
 ### **Key Design Decisions**
+
 - **Async-first**: All database operations use async/await
 - **Type safety**: Pydantic models + SQLAlchemy typing throughout
 - **Travel domain**: Models designed for collaborative trip planning
@@ -141,18 +171,23 @@ app/
 ## 🎯 Next Steps (Immediate Priorities)
 
 ### **1. Set Up Testing Framework** (Next Priority)
+
 **Task**: Implement pytest with async support
 **Requirements**:
+
 - Test configuration with test database
 - Authentication endpoint tests
 - Database model tests
 - Integration tests for API endpoints
 
 **Docker Testing**: Use `./scripts/docker-dev.sh test` to run tests in containerized environment
+**Code Quality**: Use `./scripts/docker-dev.sh check` to run linting and formatting checks
 
 ### **2. Location Services** (Future)
+
 **Task**: Implement geographic data handling
 **Requirements**:
+
 - Location search and filtering
 - Distance calculations
 - PostGIS integration (already available in Docker environment)
@@ -162,6 +197,7 @@ app/
 ### **Verify Authentication Flow**
 
 **Using Docker:**
+
 1. **Start environment**: `./scripts/docker-dev.sh up`
 2. **Run migrations**: `./scripts/docker-dev.sh migrate`
 3. **Register user**: Use curl command above or Swagger UI at `/docs`
@@ -169,6 +205,7 @@ app/
 5. **Access profile**: Use token in Authorization header: `Bearer <token>`
 
 **Using Local Development:**
+
 1. **Start server**: `fastapi dev app/main.py --port 8000`
 2. **Register user**: Use curl command above or Swagger UI at `/docs`
 3. **Login**: Get JWT token from login response
@@ -177,11 +214,13 @@ app/
 ### **Database Verification**
 
 **Docker Environment:**
+
 - **Check database**: Connect to PostgreSQL at `localhost:5432`
 - **Verify tables**: Use `./scripts/docker-dev.sh shell` then `psql` commands
 - **Test migrations**: `./scripts/docker-dev.sh migrate` should run without errors
 
 **Local Environment:**
+
 - **Check database**: SQLite file `wandr.db` should exist
 - **Verify tables**: User, user_profiles, trips, trip_members, etc.
 - **Test migrations**: `alembic upgrade head` should run without errors
@@ -191,6 +230,7 @@ app/
 ### **Database Reset (Development)**
 
 **Docker Environment:**
+
 ```bash
 # Quick reset (removes all data)
 ./scripts/docker-dev.sh reset-db
@@ -203,6 +243,7 @@ docker volume rm wandr-backend-app_postgres_data
 ```
 
 **Local Environment:**
+
 ```bash
 # Quick reset (removes all data)
 rm wandr.db
@@ -219,19 +260,23 @@ alembic upgrade head
 ```
 
 ### **Adding New API Endpoints**
+
 1. Create Pydantic schemas in `app/schemas/`
 2. Add business logic to `app/services/` (create if needed)
 3. Create API router in `app/api/v1/`
 4. Include router in `app/main.py`
-5. Test with `/docs` interface
+5. Format and lint code: `./scripts/docker-dev.sh format && ./scripts/docker-dev.sh lint`
+6. Test with `/docs` interface
 
 ### **Database Schema Changes**
+
 1. Modify models in `app/models/`
 2. Generate migration: `alembic revision --autogenerate -m "description"`
 3. Review generated migration file
 4. Apply migration: `alembic upgrade head`
 
 ### **Adding Dependencies**
+
 1. Add to `requirements.txt`
 2. Install: `pip install -r requirements.txt`
 3. Update if needed for compatibility
@@ -239,11 +284,13 @@ alembic upgrade head
 ## 🚨 Known Issues & Solutions
 
 ### **bcrypt Version Warning**
+
 - **Issue**: `(trapped) error reading bcrypt version` during password hashing
 - **Impact**: Cosmetic only - password hashing works correctly
 - **Solution**: Ignore for development, will be fixed in future dependency update
 
 ### **FastAPI CLI vs Uvicorn**
+
 - **FastAPI CLI**: `fastapi dev app/main.py --port 8000` (pretty output, file path)
 - **Uvicorn**: `uvicorn app.main:app --reload --port 8000` (traditional, module path)
 - **Both work**: Use whichever you prefer
@@ -251,17 +298,23 @@ alembic upgrade head
 ## 🎖️ Development Best Practices
 
 ### **Code Quality**
-- **Type hints**: Use throughout for better IDE support and validation
+
+- **Type hints**: Use throughout for better IDE support and validation (enforced by mypy)
+- **Code formatting**: Black for consistent formatting, Ruff for import sorting
+- **Linting**: Ruff for comprehensive code quality checks
+- **Pre-commit hooks**: Automatic formatting and linting on commit
 - **Async patterns**: Prefer async/await for all I/O operations
 - **Error handling**: Use custom exceptions with proper HTTP status codes
 - **Documentation**: Update docstrings and API descriptions
 
 ### **Database**
+
 - **Migrations**: Always create migrations for schema changes
 - **Relationships**: Use SQLAlchemy relationships for data integrity
 - **Validation**: Leverage Pydantic for comprehensive input validation
 
 ### **Security**
+
 - **JWT tokens**: Include user ID in token payload, validate on each request
 - **Password hashing**: Never store plain text passwords
 - **Input validation**: Validate all inputs with Pydantic schemas

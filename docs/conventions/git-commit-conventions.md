@@ -32,6 +32,7 @@ We follow **Conventional Commits** specification with meaningful one-liners and 
 ## 📝 Commit Types
 
 ### Primary Types
+
 - **feat**: New feature for travel users
 - **fix**: Bug fix that affects travel functionality
 - **docs**: Documentation updates (README, ADRs, guides)
@@ -41,6 +42,7 @@ We follow **Conventional Commits** specification with meaningful one-liners and 
 - **chore**: Build tools, dependencies, configuration
 
 ### Travel App Specific Types
+
 - **travel**: Travel-specific feature implementations
 - **ui**: UI/UX improvements for travel interface
 - **perf**: Performance improvements for travel scenarios
@@ -48,12 +50,14 @@ We follow **Conventional Commits** specification with meaningful one-liners and 
 ## 🎨 Scope Examples
 
 ### Component Scopes
+
 - **atoms**: Atomic design components (buttons, text, views)
 - **molecules**: Molecular components (search bars, cards)
 - **organisms**: Complex components (trip planners, maps)
 - **templates**: Page-level layouts
 
 ### Feature Scopes
+
 - **auth**: Authentication and user management
 - **planning**: Trip planning and itinerary features
 - **social**: Group collaboration and sharing
@@ -62,6 +66,7 @@ We follow **Conventional Commits** specification with meaningful one-liners and 
 - **maps**: Location and mapping features
 
 ### Infrastructure Scopes
+
 - **build**: Build system and CI/CD
 - **deps**: Dependency management
 - **config**: Configuration files
@@ -70,6 +75,7 @@ We follow **Conventional Commits** specification with meaningful one-liners and 
 ## ✅ Good Commit Examples
 
 ### Feature Development
+
 ```
 feat(planning): add trip sharing functionality
 
@@ -83,6 +89,7 @@ Closes #123
 ```
 
 ### Bug Fixes
+
 ```
 fix(atoms): resolve StyledButton press state on Android
 
@@ -95,6 +102,7 @@ Fixes #456
 ```
 
 ### Documentation
+
 ```
 docs(adr): add atomic design component structure decision
 
@@ -106,6 +114,7 @@ docs(adr): add atomic design component structure decision
 ```
 
 ### Refactoring
+
 ```
 refactor(components): migrate to consistent folder structure
 
@@ -119,6 +128,7 @@ refactor(components): migrate to consistent folder structure
 ## ❌ Avoid These Patterns
 
 ### Poor Examples
+
 ```
 # Too vague
 git commit -m "fix bug"
@@ -134,6 +144,7 @@ git commit -m "feat(planning): implement comprehensive trip planning system with
 ```
 
 ### Better Alternatives
+
 ```
 # Specific and clear
 fix(atoms): resolve button accessibility on iOS
@@ -157,12 +168,14 @@ Implement machine learning-based destination suggestions
 ## 🔍 Commit Message Guidelines
 
 ### Header Guidelines
+
 1. **Be specific**: "fix login issue" → "fix(auth): resolve OAuth callback handling"
 2. **Travel context**: Include travel-relevant implications
 3. **Action-oriented**: Start with active verbs
 4. **Searchable**: Use consistent terminology
 
 ### Body Guidelines
+
 1. **Explain the why**: Motivation for the change
 2. **Detail the what**: Specific changes made
 3. **Travel implications**: How it affects travel user experience
@@ -170,6 +183,7 @@ Implement machine learning-based destination suggestions
 5. **Testing notes**: How the change was verified
 
 ### Footer Guidelines
+
 1. **Breaking changes**: `BREAKING CHANGE: ...`
 2. **Issue references**: `Closes #123`, `Fixes #456`
 3. **Co-authors**: `Co-authored-by: Name <email>`
@@ -177,18 +191,22 @@ Implement machine learning-based destination suggestions
 ## 🛠️ Tools and Automation
 
 ### Recommended Tools
+
 - **Commitizen**: Interactive commit message creation
 - **Conventional Changelog**: Automated changelog generation
 - **Git hooks**: Validate commit message format
 
 ### IDE Integration
+
 - **VSCode**: Git commit message templates
 - **Cursor**: Consistent commit patterns
 
 ## 📚 Travel App Specific Considerations
 
 ### Travel User Stories
+
 When committing travel features, include user story context:
+
 ```
 feat(social): add group expense splitting
 
@@ -203,7 +221,9 @@ Enables seamless group travel financial management
 ```
 
 ### Performance Implications
+
 Highlight travel-specific performance considerations:
+
 ```
 perf(offline): optimize map data caching
 
@@ -217,12 +237,14 @@ perf(offline): optimize map data caching
 ## 🎯 Benefits
 
 ### For Developers
+
 - **Clear history**: Easy to understand code evolution
 - **Better debugging**: Link changes to specific issues
 - **Code reviews**: Understand change motivation
 - **Onboarding**: New developers understand project patterns
 
 ### For Travel App
+
 - **Feature tracking**: Monitor travel feature development
 - **Release notes**: Generate user-facing changelogs
 - **Bug tracking**: Connect fixes to specific travel scenarios
@@ -232,4 +254,4 @@ perf(offline): optimize map data caching
 
 **Last Updated**: June 2025
 
-This convention ensures our Git history tells the story of building a world-class travel app while maintaining professional development standards. When in doubt, prioritize clarity and travel user context in commit messages. 
+This convention ensures our Git history tells the story of building a world-class travel app while maintaining professional development standards. When in doubt, prioritize clarity and travel user context in commit messages.

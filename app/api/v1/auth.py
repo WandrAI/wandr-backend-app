@@ -1,20 +1,21 @@
 from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import (
-    verify_password,
-    get_password_hash,
     create_access_token,
     get_current_user,
+    get_password_hash,
+    verify_password,
 )
-from app.core.config import settings
 from app.models.user import User, UserProfile
-from app.schemas.user import UserCreate, UserResponse, UserLogin, Token
 from app.schemas.common import Message
+from app.schemas.user import Token, UserCreate, UserLogin, UserResponse
 
 router = APIRouter()
 
@@ -29,25 +30,23 @@ async def register_user(
     query = select(User).where(User.email == user_data.email)
     result = await db.execute(query)
     existing_user = result.scalar_one_or_none()
-    
+
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
-    
+
     # Check username uniqueness if provided
     if user_data.username:
         query = select(User).where(User.username == user_data.username)
         result = await db.execute(query)
         existing_username = result.scalar_one_or_none()
-        
+
         if existing_username:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already taken"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken"
             )
-    
+
     # Create new user
     hashed_password = get_password_hash(user_data.password)
     new_user = User(
@@ -57,20 +56,20 @@ async def register_user(
         is_active=True,
         is_verified=False,
     )
-    
+
     db.add(new_user)
     await db.flush()  # Get the user ID
-    
+
     # Create user profile
     user_profile = UserProfile(
         user_id=new_user.id,
-        display_name=user_data.username or user_data.email.split('@')[0],
+        display_name=user_data.username or user_data.email.split("@")[0],
     )
     db.add(user_profile)
-    
+
     await db.commit()
     await db.refresh(new_user)
-    
+
     return UserResponse.model_validate(new_user)
 
 
@@ -84,7 +83,7 @@ async def login_user(
     query = select(User).where(User.email == user_data.email)
     result = await db.execute(query)
     user = result.scalar_one_or_none()
-    
+
     # Verify user and password
     if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
@@ -92,19 +91,18 @@ async def login_user(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
-    
+
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
@@ -122,7 +120,7 @@ async def login_oauth(
     query = select(User).where(User.email == form_data.username)
     result = await db.execute(query)
     user = result.scalar_one_or_none()
-    
+
     # Verify user and password
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
@@ -130,19 +128,18 @@ async def login_oauth(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
-    
+
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
@@ -163,5 +160,5 @@ async def logout_user() -> Message:
     """Logout user (client-side token removal)."""
     return Message(
         message="Successfully logged out",
-        detail="Please remove the token from client storage"
+        detail="Please remove the token from client storage",
     )

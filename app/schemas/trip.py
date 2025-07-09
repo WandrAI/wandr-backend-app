@@ -1,12 +1,14 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Optional, Dict, Any, List
 from datetime import date, datetime
 from enum import Enum
+from typing import Any
 import uuid
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class TripStatus(str, Enum):
     """Trip status options."""
+
     PLANNING = "planning"
     ACTIVE = "active"
     COMPLETED = "completed"
@@ -15,6 +17,7 @@ class TripStatus(str, Enum):
 
 class TripMemberRole(str, Enum):
     """Trip member role options."""
+
     ORGANIZER = "organizer"
     PARTICIPANT = "participant"
     VIEWER = "viewer"
@@ -22,128 +25,150 @@ class TripMemberRole(str, Enum):
 
 class TripBase(BaseModel):
     """Base trip schema."""
+
     title: str = Field(..., min_length=1, max_length=200, description="Trip title")
-    description: Optional[str] = Field(None, max_length=1000, description="Trip description")
-    destination: Optional[str] = Field(None, max_length=200, description="Trip destination")
-    start_date: Optional[date] = Field(None, description="Trip start date")
-    end_date: Optional[date] = Field(None, description="Trip end date")
-    
-    @field_validator('end_date')
+    description: str | None = Field(
+        None, max_length=1000, description="Trip description"
+    )
+    destination: str | None = Field(
+        None, max_length=200, description="Trip destination"
+    )
+    start_date: date | None = Field(None, description="Trip start date")
+    end_date: date | None = Field(None, description="Trip end date")
+
+    @field_validator("end_date")
     @classmethod
     def end_date_after_start_date(cls, v, info):
-        if v and info.data.get('start_date'):
-            start_date = info.data['start_date']
+        if v and info.data.get("start_date"):
+            start_date = info.data["start_date"]
             # Convert string to date if needed
             if isinstance(start_date, str):
                 from datetime import datetime
-                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             if isinstance(v, str):
                 from datetime import datetime
-                v = datetime.strptime(v, '%Y-%m-%d').date()
+
+                v = datetime.strptime(v, "%Y-%m-%d").date()
             if v < start_date:
-                raise ValueError('End date must be after start date')
+                raise ValueError("End date must be after start date")
         return v
 
 
 class TripCreate(TripBase):
     """Schema for creating a trip."""
+
     start_date: date = Field(..., description="Trip start date")
-    end_date: date = Field(..., description="Trip end date") 
-    trip_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Additional trip data")
+    end_date: date = Field(..., description="Trip end date")
+    trip_data: dict[str, Any] | None = Field(
+        default_factory=dict, description="Additional trip data"
+    )
 
 
 class TripUpdate(BaseModel):
     """Schema for updating a trip."""
-    title: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
-    status: Optional[TripStatus] = None
-    trip_data: Optional[Dict[str, Any]] = None
-    
-    @field_validator('end_date')
+
+    title: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=1000)
+    start_date: date | None = None
+    end_date: date | None = None
+    status: TripStatus | None = None
+    trip_data: dict[str, Any] | None = None
+
+    @field_validator("end_date")
     @classmethod
     def end_date_after_start_date(cls, v, info):
-        if v and info.data.get('start_date'):
-            start_date = info.data['start_date']
+        if v and info.data.get("start_date"):
+            start_date = info.data["start_date"]
             # Convert string to date if needed
             if isinstance(start_date, str):
                 from datetime import datetime
-                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             if isinstance(v, str):
                 from datetime import datetime
-                v = datetime.strptime(v, '%Y-%m-%d').date()
+
+                v = datetime.strptime(v, "%Y-%m-%d").date()
             if v < start_date:
-                raise ValueError('End date must be after start date')
+                raise ValueError("End date must be after start date")
         return v
 
 
 class TripResponse(TripBase):
     """Schema for trip response."""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: uuid.UUID
     status: TripStatus
     created_by: uuid.UUID
-    trip_data: Dict[str, Any]
+    trip_data: dict[str, Any]
     created_at: datetime
-    updated_at: Optional[datetime] = None
-    
+    updated_at: datetime | None = None
+
     # Optional nested data
-    member_count: Optional[int] = Field(None, description="Number of trip members")
-    user_role: Optional[TripMemberRole] = Field(None, description="Current user's role in this trip")
+    member_count: int | None = Field(None, description="Number of trip members")
+    user_role: TripMemberRole | None = Field(
+        None, description="Current user's role in this trip"
+    )
 
 
 class TripListResponse(BaseModel):
     """Schema for trip list response."""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: uuid.UUID
     title: str
-    description: Optional[str] = None
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    description: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     status: TripStatus
     created_by: uuid.UUID
     created_at: datetime
-    member_count: Optional[int] = None
-    user_role: Optional[TripMemberRole] = None
+    member_count: int | None = None
+    user_role: TripMemberRole | None = None
 
 
 class TripMemberBase(BaseModel):
     """Base trip member schema."""
+
     user_id: uuid.UUID
     role: TripMemberRole = TripMemberRole.PARTICIPANT
 
 
 class TripMemberCreate(TripMemberBase):
     """Schema for adding a trip member."""
-    permissions: Optional[Dict[str, Any]] = Field(default_factory=dict)
+
+    permissions: dict[str, Any] | None = Field(default_factory=dict)
 
 
 class TripMemberUpdate(BaseModel):
     """Schema for updating a trip member."""
-    role: Optional[TripMemberRole] = None
-    permissions: Optional[Dict[str, Any]] = None
+
+    role: TripMemberRole | None = None
+    permissions: dict[str, Any] | None = None
 
 
 class TripMemberResponse(TripMemberBase):
     """Schema for trip member response."""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: uuid.UUID
     trip_id: uuid.UUID
-    permissions: Dict[str, Any]
+    permissions: dict[str, Any]
     created_at: datetime
-    
+
     # User information (if included)
-    user_email: Optional[str] = None
-    user_username: Optional[str] = None
-    user_display_name: Optional[str] = None
+    user_email: str | None = None
+    user_username: str | None = None
+    user_display_name: str | None = None
 
 
 class TripActivityType(str, Enum):
     """Trip activity types."""
+
     CREATED = "created"
     UPDATED = "updated"
     MEMBER_ADDED = "member_added"
@@ -154,15 +179,16 @@ class TripActivityType(str, Enum):
 
 class TripActivityResponse(BaseModel):
     """Schema for trip activity response."""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: uuid.UUID
     trip_id: uuid.UUID
-    user_id: Optional[uuid.UUID] = None
+    user_id: uuid.UUID | None = None
     activity_type: TripActivityType
-    activity_data: Dict[str, Any]
+    activity_data: dict[str, Any]
     created_at: datetime
-    
+
     # User information (if included)
-    user_email: Optional[str] = None
-    user_username: Optional[str] = None
+    user_email: str | None = None
+    user_username: str | None = None

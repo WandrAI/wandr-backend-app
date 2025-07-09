@@ -1,19 +1,22 @@
 import asyncio
 from logging.config import fileConfig
+from pathlib import Path
+import sys
+
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
 from alembic import context
-import sys
-import os
 
 # Add the app directory to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(str(Path(__file__).parent.parent))
 
 from app.core.config import settings
 from app.core.database import Base
+
 # Import all models so Alembic can detect them
-from app.models import user, trip, location
+from app.models import location, trip, user
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

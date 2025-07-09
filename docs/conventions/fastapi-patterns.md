@@ -1,6 +1,7 @@
 # FastAPI Development Patterns
 
 ## Overview
+
 Development patterns and best practices for the Wandr backend API using FastAPI, SQLAlchemy, and async Python.
 
 ## Project Structure
@@ -130,7 +131,7 @@ Base = declarative_base()
 
 class BaseModel(Base):
     __abstract__ = True
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -181,7 +182,7 @@ from app.models.base import BaseModel
 
 class Trip(BaseModel):
     __tablename__ = "trips"
-    
+
     title = Column(String, nullable=False)
     description = Column(Text)
     start_date = Column(Date)
@@ -189,7 +190,7 @@ class Trip(BaseModel):
     status = Column(String, default="planning")
     trip_data = Column(JSONB)  # Flexible trip details
     created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    
+
     # Relationships
     creator = relationship("User", back_populates="created_trips")
     members = relationship("TripMember", back_populates="trip")
@@ -197,12 +198,12 @@ class Trip(BaseModel):
 
 class TripMember(BaseModel):
     __tablename__ = "trip_members"
-    
+
     trip_id = Column(UUID(as_uuid=True), ForeignKey("trips.id"))
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     role = Column(String, nullable=False)  # organizer, participant, viewer
     permissions = Column(JSONB)
-    
+
     # Relationships
     trip = relationship("Trip", back_populates="members")
     user = relationship("User", back_populates="trip_memberships")
@@ -299,7 +300,7 @@ from app.schemas.trip import TripCreate, TripUpdate
 class TripService:
     def __init__(self, db: AsyncSession):
         self.db = db
-    
+
     async def create_trip(self, trip_data: TripCreate, user_id: uuid.UUID) -> Trip:
         """Create a new trip with the user as organizer."""
         trip = Trip(
@@ -312,7 +313,7 @@ class TripService:
         )
         self.db.add(trip)
         await self.db.flush()  # Get trip.id
-        
+
         # Add creator as organizer
         trip_member = TripMember(
             trip_id=trip.id,
@@ -321,15 +322,15 @@ class TripService:
             permissions={"edit": True, "delete": True, "invite": True},
         )
         self.db.add(trip_member)
-        
+
         await self.db.commit()
         await self.db.refresh(trip)
         return trip
-    
+
     async def get_user_trips(
-        self, 
-        user_id: uuid.UUID, 
-        skip: int = 0, 
+        self,
+        user_id: uuid.UUID,
+        skip: int = 0,
         limit: int = 100
     ) -> List[Trip]:
         """Get trips where user is a member."""
@@ -343,10 +344,10 @@ class TripService:
         )
         result = await self.db.execute(query)
         return result.scalars().all()
-    
+
     async def get_trip_by_id(
-        self, 
-        trip_id: uuid.UUID, 
+        self,
+        trip_id: uuid.UUID,
         user_id: uuid.UUID
     ) -> Optional[Trip]:
         """Get trip by ID if user has access."""
@@ -379,7 +380,7 @@ class TripBase(BaseModel):
     description: Optional[str] = Field(None, max_length=1000)
     start_date: Optional[date] = None
     end_date: Optional[date] = None
-    
+
     @validator('end_date')
     def end_date_after_start_date(cls, v, values):
         if v and values.get('start_date') and v < values['start_date']:
@@ -404,7 +405,7 @@ class TripResponse(TripBase):
     trip_data: Dict[str, Any]
     created_at: datetime
     updated_at: Optional[datetime]
-    
+
     class Config:
         from_attributes = True
 ```
@@ -437,7 +438,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(
             credentials.credentials,
@@ -449,15 +450,15 @@ async def get_current_user(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    
+
     # Get user from database
     query = select(User).where(User.id == uuid.UUID(user_id))
     result = await db.execute(query)
     user = result.scalar_one_or_none()
-    
+
     if user is None or not user.is_active:
         raise credentials_exception
-    
+
     return user
 ```
 
@@ -524,12 +525,12 @@ def event_loop():
 async def test_engine():
     """Create test database engine."""
     engine = create_async_engine(TEST_DATABASE_URL, echo=True)
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
@@ -539,7 +540,7 @@ async def test_db(test_engine):
     TestSessionLocal = sessionmaker(
         test_engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with TestSessionLocal() as session:
         yield session
 
@@ -547,10 +548,10 @@ async def test_db(test_engine):
 async def client(test_db):
     """Create test client."""
     app.dependency_overrides[get_db] = lambda: test_db
-    
+
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 ```
 
@@ -565,4 +566,4 @@ async def client(test_db):
 7. **Proper logging** throughout the application
 8. **Environment-based configuration** for different deployment stages
 9. **Database connection pooling** for production performance
-10. **Comprehensive testing** with async test patterns 
+10. **Comprehensive testing** with async test patterns

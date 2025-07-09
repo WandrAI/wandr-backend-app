@@ -11,11 +11,13 @@ This guide covers how to run the Wandr Backend API using Docker for both develop
 ## Quick Start (Development)
 
 1. **Start the development environment:**
+
    ```bash
    ./scripts/docker-dev.sh up
    ```
 
 2. **Run database migrations:**
+
    ```bash
    ./scripts/docker-dev.sh migrate
    ```
@@ -248,6 +250,7 @@ docker-compose ps
 ### Common Issues
 
 1. **Port already in use**
+
    ```bash
    # Stop conflicting services
    sudo lsof -i :8000  # Find process using port
@@ -255,19 +258,21 @@ docker-compose ps
    ```
 
 2. **Database connection failed**
+
    ```bash
    # Check database health
    docker-compose exec db pg_isready -U wandr_user
-   
+
    # Restart database
    docker-compose restart db
    ```
 
 3. **Permission denied**
+
    ```bash
    # Fix file permissions
    chmod +x scripts/docker-dev.sh
-   
+
    # Fix volume permissions
    docker-compose down
    docker volume rm wandr-backend-app_postgres_data

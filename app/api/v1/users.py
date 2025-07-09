@@ -1,14 +1,15 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-import uuid
 
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.schemas.user import (
-    UserResponse,
-    UserProfileUpdate,
     UserProfileResponse,
+    UserProfileUpdate,
+    UserResponse,
 )
 from app.services.user_service import UserService
 
@@ -31,13 +32,12 @@ async def get_current_user_profile_details(
     """Get current user's detailed profile."""
     user_service = UserService(db)
     profile = await user_service.get_user_profile(current_user.id)
-    
+
     if not profile:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User profile not found"
         )
-    
+
     return UserProfileResponse.model_validate(profile)
 
 
@@ -50,7 +50,7 @@ async def update_current_user_profile(
     """Update current user's profile."""
     user_service = UserService(db)
     profile = await user_service.update_user_profile(current_user.id, profile_data)
-    
+
     return UserProfileResponse.model_validate(profile)
 
 
@@ -63,13 +63,12 @@ async def get_user_public_info(
     """Get public user information."""
     user_service = UserService(db)
     user_info = await user_service.get_public_user_info(user_id)
-    
+
     if not user_info:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     # Return only public information
     return {
         "id": user_info["id"],

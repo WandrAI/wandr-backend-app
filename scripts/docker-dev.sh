@@ -46,6 +46,9 @@ show_help() {
     echo "  test          Run tests in Docker"
     echo "  migrate       Run database migrations"
     echo "  reset-db      Reset the database (WARNING: destroys all data)"
+    echo "  format        Format code with Black and Ruff"
+    echo "  lint          Run linting with Ruff and mypy"
+    echo "  check         Run all code quality checks (lint + format check)"
     echo "  status        Show container status"
     echo "  clean         Remove all containers and volumes"
     echo "  help          Show this help message"
@@ -138,6 +141,31 @@ show_status() {
     docker-compose ps
 }
 
+# Format code
+format_code() {
+    print_info "Formatting code with Ruff..."
+    docker-compose exec app ruff format . || docker-compose run --rm app ruff format .
+    docker-compose exec app ruff check --fix . || docker-compose run --rm app ruff check --fix .
+    print_success "Code formatting completed"
+}
+
+# Run linting
+run_linting() {
+    print_info "Running linting with Ruff and mypy..."
+    docker-compose exec app ruff check . || docker-compose run --rm app ruff check .
+    docker-compose exec app mypy . || docker-compose run --rm app mypy .
+    print_success "Linting completed"
+}
+
+# Run all code quality checks
+run_code_quality_checks() {
+    print_info "Running all code quality checks..."
+    docker-compose exec app ruff format --check . || docker-compose run --rm app ruff format --check .
+    docker-compose exec app ruff check . || docker-compose run --rm app ruff check .
+    docker-compose exec app mypy . || docker-compose run --rm app mypy .
+    print_success "All code quality checks completed"
+}
+
 # Clean up everything
 clean_all() {
     print_warning "This will remove all containers, volumes, and images!"
@@ -164,7 +192,7 @@ check_docker() {
 # Main command handling
 main() {
     check_docker
-    
+
     case "${1:-help}" in
         build)
             build_images
@@ -192,6 +220,15 @@ main() {
             ;;
         reset-db)
             reset_database
+            ;;
+        format)
+            format_code
+            ;;
+        lint)
+            run_linting
+            ;;
+        check)
+            run_code_quality_checks
             ;;
         status)
             show_status

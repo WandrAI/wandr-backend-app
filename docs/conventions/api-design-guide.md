@@ -1,11 +1,13 @@
 # API Design Guide
 
 ## Overview
+
 This document establishes API design principles and conventions for the Wandr backend application, ensuring consistency, maintainability, and excellent developer experience.
 
 ## RESTful API Principles
 
 ### Resource Naming
+
 - Use **nouns** for resource endpoints, not verbs
 - Use **plural** forms for collections: `/destinations`, `/trips`, `/users`
 - Use **lowercase** with hyphens for multi-word resources: `/travel-plans`
@@ -23,7 +25,9 @@ GET /api/v1/userPreferences
 ```
 
 ### HTTP Methods
+
 Follow standard HTTP semantics:
+
 - **GET**: Retrieve data (read-only, safe)
 - **POST**: Create new resources or complex operations
 - **PUT**: Update entire resource (idempotent)
@@ -31,7 +35,9 @@ Follow standard HTTP semantics:
 - **DELETE**: Remove resources (idempotent)
 
 ### Status Codes
+
 Use appropriate HTTP status codes:
+
 - **200 OK**: Successful GET, PUT, PATCH
 - **201 Created**: Successful POST with resource creation
 - **204 No Content**: Successful DELETE or PUT without response body
@@ -45,12 +51,13 @@ Use appropriate HTTP status codes:
 ## Travel API Conventions
 
 ### Destination Resources
+
 ```python
 # Collection endpoints
 GET /api/v1/destinations              # List destinations with pagination
 POST /api/v1/destinations             # Create new destination (admin)
 
-# Individual resource endpoints  
+# Individual resource endpoints
 GET /api/v1/destinations/{id}         # Get destination details
 PUT /api/v1/destinations/{id}         # Update destination (admin)
 DELETE /api/v1/destinations/{id}      # Delete destination (admin)
@@ -61,6 +68,7 @@ POST /api/v1/destinations/{id}/reviews # Add review to destination
 ```
 
 ### Trip Resources
+
 ```python
 # User trip management
 GET /api/v1/trips                     # User's trips
@@ -77,6 +85,7 @@ POST /api/v1/trips/{id}/activities   # Add activity to trip
 ## Request/Response Patterns
 
 ### Request Format
+
 ```json
 {
   "data": {
@@ -94,11 +103,12 @@ POST /api/v1/trips/{id}/activities   # Add activity to trip
 ```
 
 ### Response Format
+
 ```json
 {
   "data": {
     "id": "123",
-    "type": "destination", 
+    "type": "destination",
     "attributes": {
       "name": "Paris",
       "country": "France",
@@ -121,11 +131,12 @@ POST /api/v1/trips/{id}/activities   # Add activity to trip
 ```
 
 ### Error Response Format
+
 ```json
 {
   "errors": [
     {
-      "code": "VALIDATION_ERROR", 
+      "code": "VALIDATION_ERROR",
       "title": "Validation Failed",
       "detail": "Destination name is required",
       "source": {
@@ -142,11 +153,13 @@ POST /api/v1/trips/{id}/activities   # Add activity to trip
 ## Pagination
 
 ### Cursor-Based Pagination (Recommended)
+
 ```
 GET /api/v1/destinations?cursor=eyJpZCI6MTIzfQ&limit=20
 ```
 
 Response includes pagination metadata:
+
 ```json
 {
   "data": [...],
@@ -162,6 +175,7 @@ Response includes pagination metadata:
 ```
 
 ### Offset Pagination (For simple cases)
+
 ```
 GET /api/v1/destinations?offset=20&limit=20
 ```
@@ -169,12 +183,14 @@ GET /api/v1/destinations?offset=20&limit=20
 ## Filtering and Searching
 
 ### Query Parameters
+
 ```
 GET /api/v1/destinations?country=france&rating_min=4.0&sort=-rating
 GET /api/v1/destinations?search=paris&type=restaurant
 ```
 
 ### Advanced Filtering
+
 ```
 GET /api/v1/destinations?filter[country]=france&filter[rating][gte]=4.0
 ```
@@ -182,12 +198,14 @@ GET /api/v1/destinations?filter[country]=france&filter[rating][gte]=4.0
 ## Versioning
 
 ### URL Versioning (Current)
+
 ```
 /api/v1/destinations
 /api/v2/destinations
 ```
 
 ### Header Versioning (Future consideration)
+
 ```
 Accept: application/vnd.wandr.v1+json
 ```
@@ -195,11 +213,13 @@ Accept: application/vnd.wandr.v1+json
 ## Authentication & Authorization
 
 ### JWT Bearer Tokens
+
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### API Keys (For third-party integration)
+
 ```
 X-API-Key: wandr_live_sk_1234567890abcdef
 ```
@@ -207,6 +227,7 @@ X-API-Key: wandr_live_sk_1234567890abcdef
 ## Rate Limiting
 
 ### Headers
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -214,12 +235,13 @@ X-RateLimit-Reset: 1640995200
 ```
 
 ### Rate Limit Response
+
 ```json
 {
   "errors": [
     {
       "code": "RATE_LIMIT_EXCEEDED",
-      "title": "Rate Limit Exceeded", 
+      "title": "Rate Limit Exceeded",
       "detail": "Too many requests. Try again in 60 seconds."
     }
   ]
@@ -229,21 +251,25 @@ X-RateLimit-Reset: 1640995200
 ## Travel-Specific Considerations
 
 ### Location Data
+
 - Use decimal degrees for coordinates (latitude, longitude)
 - Include address components (street, city, country, postal_code)
 - Support multiple coordinate reference systems if needed
 
 ### Currency and Pricing
+
 - Always include currency code (ISO 4217)
 - Use decimal type for prices to avoid floating-point issues
 - Support price ranges for activities/accommodations
 
 ### Internationalization
+
 - Accept `Accept-Language` header for localized content
 - Return localized destination names and descriptions
 - Support multiple currency display formats
 
 ### Time Zones
+
 - Store all times in UTC
 - Include timezone information for location-specific times
 - Support user timezone preferences
@@ -251,11 +277,13 @@ X-RateLimit-Reset: 1640995200
 ## Performance Guidelines
 
 ### Caching
+
 - Use ETags for conditional requests
 - Implement cache headers for static/semi-static data
 - Cache expensive queries (destination searches, recommendations)
 
 ### Response Optimization
+
 - Use field selection: `?fields=name,country,rating`
 - Implement resource embedding: `?include=reviews,photos`
 - Compress responses with gzip
@@ -263,21 +291,25 @@ X-RateLimit-Reset: 1640995200
 ## Documentation Requirements
 
 ### FastAPI Integration
+
 - Use Pydantic models for automatic schema generation
 - Provide comprehensive docstrings for all endpoints
 - Include example requests/responses in OpenAPI spec
 - Tag endpoints by resource type for better organization
 
 ### API Documentation Standards
+
 - Document all possible error responses
 - Include rate limiting information
 - Provide authentication examples
 - Document pagination patterns clearly
 
 ## Related Documents
+
 - [FastAPI Patterns](./fastapi-patterns.md)
 - [Backend Architecture](../adr/001-backend-architecture-decisions.md)
 - [API Security](../adr/003-api-security-implementation.md)
 
 ---
-**Last Updated**: June 2025 
+
+**Last Updated**: June 2025

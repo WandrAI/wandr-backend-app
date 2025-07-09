@@ -15,6 +15,7 @@ The Wandr Backend API provides the server-side infrastructure for travel applica
 ## 🏗️ Architecture
 
 ### **Tech Stack**
+
 - **Framework**: FastAPI (Python 3.12) with async/await patterns
 - **Database**: SQLite (development) / PostgreSQL with PostGIS (production)
 - **Authentication**: JWT with FastAPI Security utilities + bcrypt
@@ -25,6 +26,7 @@ The Wandr Backend API provides the server-side infrastructure for travel applica
 - **Future**: GraphQL, WebSockets, Redis, Celery, AI integration
 
 ### **API Design Philosophy**
+
 - **RESTful APIs** with clear resource endpoints
 - **Async/await** patterns for optimal performance
 - **Type-safe** with Pydantic models and type hints
@@ -37,10 +39,11 @@ The Wandr Backend API provides the server-side infrastructure for travel applica
 This backend provides RESTful and GraphQL APIs for various client applications.
 
 ### **API Endpoints Overview**
+
 ```
 /api/v1/ (REST API)
 ├── auth/              # Authentication & user management
-├── users/             # User profiles & preferences  
+├── users/             # User profiles & preferences
 ├── trips/             # Trip CRUD operations
 ├── recommendations/   # Travel recommendations & data
 ├── groups/            # Group trip management
@@ -58,7 +61,8 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 
 ## 🚀 Development Phases
 
-### **Phase 1 - Foundation** ✅ *Completed*
+### **Phase 1 - Foundation** ✅ _Completed_
+
 - [x] Project setup with FastAPI
 - [x] Documentation structure
 - [x] Cursor rules for AI assistance
@@ -67,7 +71,8 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 - [x] Basic user management APIs
 - [x] Development environment setup
 
-### **Phase 2 - Core Travel APIs** 🔄 *In Progress*
+### **Phase 2 - Core Travel APIs** 🔄 _In Progress_
+
 - [x] Trip management CRUD operations
 - [x] User profile management
 - [x] Collaborative trip planning features
@@ -77,6 +82,7 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 - [ ] External travel API integrations
 
 ### **Phase 3 - Social & Collaboration**
+
 - [ ] Group trip management APIs
 - [ ] Real-time collaboration (WebSockets)
 - [ ] Expense tracking and splitting
@@ -84,6 +90,7 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 - [ ] Push notification system
 
 ### **Phase 4 - Advanced Features**
+
 - [ ] Advanced AI personalization
 - [ ] Machine learning recommendation improvements
 - [ ] Travel service integrations (booking, transport)
@@ -97,17 +104,20 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 The fastest way to get started is using Docker, which provides a complete development environment.
 
 1. **Clone the repository:**
+
    ```bash
    git clone <repository-url>
    cd wandr-backend-app
    ```
 
 2. **Start the development environment:**
+
    ```bash
    ./scripts/docker-dev.sh up
    ```
 
 3. **Run database migrations:**
+
    ```bash
    ./scripts/docker-dev.sh migrate
    ```
@@ -119,6 +129,7 @@ The fastest way to get started is using Docker, which provides a complete develo
    - Redis: localhost:6379
 
 #### **Essential Docker Commands**
+
 ```bash
 # Start development environment
 ./scripts/docker-dev.sh up
@@ -131,6 +142,15 @@ The fastest way to get started is using Docker, which provides a complete develo
 
 # Run tests
 ./scripts/docker-dev.sh test
+
+# Format code (Black + Ruff)
+./scripts/docker-dev.sh format
+
+# Run linting (Ruff + mypy)
+./scripts/docker-dev.sh lint
+
+# Check code quality
+./scripts/docker-dev.sh check
 
 # Open shell in container
 ./scripts/docker-dev.sh shell
@@ -147,35 +167,40 @@ The fastest way to get started is using Docker, which provides a complete develo
 ### **Prerequisites**
 
 **Option 1: Docker (Recommended)**
+
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 - At least 4GB RAM available for containers
 
 **Option 2: Local Development**
+
 - Python 3.11+ (recommended: 3.12)
 - Git
 
-*Note: Docker provides a complete environment with PostgreSQL and Redis. For local development, the project uses SQLite (no additional database setup required).*
+_Note: Docker provides a complete environment with PostgreSQL and Redis. For local development, the project uses SQLite (no additional database setup required)._
 
 ### **Quick Start**
 
 1. **Clone and setup the project:**
+
    ```bash
    # Clone the repository
    git clone <repository-url>
    cd wandr-backend-app
-   
+
    # Setup virtual environment
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. **Setup environment (optional for development):**
+
    ```bash
    # Copy environment template (optional - defaults work for development)
    cp .env.example .env
@@ -183,28 +208,55 @@ The fastest way to get started is using Docker, which provides a complete develo
    ```
 
 4. **Run database migrations:**
+
    ```bash
    alembic upgrade head
    ```
 
-5. **Start the development server:**
-   
+5. **Install code quality tools:**
+
+   ```bash
+   # Install pre-commit hooks for automatic code formatting
+   pre-commit install
+   ```
+
+6. **Start the development server:**
+
    **Option 1: FastAPI CLI (recommended):**
+
    ```bash
    fastapi dev app/main.py --port 8000
    ```
-   
+
    **Option 2: Uvicorn:**
+
    ```bash
    uvicorn app.main:app --reload --port 8000
    ```
+
+#### **Local Code Quality Commands**
+
+```bash
+# Format code
+black .
+ruff check --fix .
+
+# Check code quality
+ruff check .
+mypy .
+
+# Run pre-commit hooks manually
+pre-commit run --all-files
+```
 
 ### **🎉 You're Ready!**
 
 The API server will start at **http://localhost:8000**
 
 ### **API Documentation**
+
 Once running, visit:
+
 - **Interactive API Docs (Swagger)**: http://localhost:8000/docs
 - **Alternative Docs (ReDoc)**: http://localhost:8000/redoc
 - **Health Check**: http://localhost:8000/health
@@ -212,17 +264,19 @@ Once running, visit:
 ### **Try the API**
 
 **Register a new user:**
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
-    "username": "testuser", 
+    "username": "testuser",
     "password": "testpassword123"
   }'
 ```
 
 **Login and get a token:**
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/auth/login" \
   -H "Content-Type: application/json" \
@@ -233,6 +287,7 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 ```
 
 **Create a trip:**
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/trips" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
@@ -246,12 +301,14 @@ curl -X POST "http://localhost:8000/api/v1/trips" \
 ```
 
 **List your trips:**
+
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   http://localhost:8000/api/v1/trips
 ```
 
 ### **Development Features**
+
 - ✅ **Hot Reload**: Code changes automatically restart the server
 - ✅ **Auto Documentation**: Interactive API docs at `/docs`
 - ✅ **JWT Authentication**: Secure user registration and login
@@ -269,7 +326,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
 Comprehensive documentation following the mobile app's proven patterns:
 
 - **Architecture Decision Records**: `/docs/adr/` - Backend architectural decisions
-- **API Specifications**: `/docs/api/` - Detailed endpoint documentation  
+- **API Specifications**: `/docs/api/` - Detailed endpoint documentation
 - **Development Guide**: `/docs/development/` - Setup and development patterns
 - **Docker Setup**: `DOCKER.md` - Complete Docker development and deployment guide
 - **Deployment Guide**: `/docs/deployment/` - Production deployment instructions
@@ -302,5 +359,5 @@ Comprehensive documentation following the mobile app's proven patterns:
 
 ---
 
-**Built with ❤️ for travelers worldwide**  
-*Making travel planning seamless, social, and smart.* 
+**Built with ❤️ for travelers worldwide**
+_Making travel planning seamless, social, and smart._

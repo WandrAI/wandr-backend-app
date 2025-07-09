@@ -11,20 +11,22 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User, UserProfile
-from app.models.trip import Trip, TripMember, TripActivity
 from app.models.location import Location
+from app.models.trip import Trip
+from app.models.user import User
 
 
 class DatabaseTestUtils:
     """Utility class for database testing operations."""
-    
+
     @staticmethod
     async def count_records(db: AsyncSession, model_class) -> int:
         """Count records in a table."""
-        result = await db.execute(text(f"SELECT COUNT(*) FROM {model_class.__tablename__}"))
+        result = await db.execute(
+            text(f"SELECT COUNT(*) FROM {model_class.__tablename__}")
+        )
         return result.scalar_one()
-    
+
     @staticmethod
     async def clear_all_tables(db: AsyncSession):
         """Clear all data from all tables."""
@@ -36,28 +38,32 @@ class DatabaseTestUtils:
         await db.execute(text("DELETE FROM user_profiles"))
         await db.execute(text("DELETE FROM users"))
         await db.commit()
-    
+
     @staticmethod
     async def verify_user_exists(db: AsyncSession, email: str) -> bool:
         """Verify that a user exists with the given email."""
-        result = await db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": email})
+        result = await db.execute(
+            text("SELECT id FROM users WHERE email = :email"), {"email": email}
+        )
         return result.scalar_one_or_none() is not None
-    
+
     @staticmethod
     async def verify_trip_exists(db: AsyncSession, title: str) -> bool:
         """Verify that a trip exists with the given title."""
-        result = await db.execute(text("SELECT id FROM trips WHERE title = :title"), {"title": title})
+        result = await db.execute(
+            text("SELECT id FROM trips WHERE title = :title"), {"title": title}
+        )
         return result.scalar_one_or_none() is not None
-    
+
     @staticmethod
     async def get_user_trip_count(db: AsyncSession, user_id: int) -> int:
         """Get the number of trips for a user."""
         result = await db.execute(
-            text("SELECT COUNT(*) FROM trips WHERE owner_id = :user_id"), 
-            {"user_id": user_id}
+            text("SELECT COUNT(*) FROM trips WHERE owner_id = :user_id"),
+            {"user_id": user_id},
         )
         return result.scalar_one()
-    
+
     @staticmethod
     async def verify_foreign_key_constraints(db: AsyncSession):
         """Verify that foreign key constraints are working."""
@@ -76,7 +82,7 @@ class DatabaseTestUtils:
 @pytest.mark.unit
 class TestDatabaseConfiguration:
     """Test database configuration and utilities."""
-    
+
     @pytest.mark.asyncio
     async def test_database_session_creates_tables(self, db_session: AsyncSession):
         """Test that database session creates all required tables."""
@@ -84,11 +90,11 @@ class TestDatabaseConfiguration:
         user_count = await DatabaseTestUtils.count_records(db_session, User)
         trip_count = await DatabaseTestUtils.count_records(db_session, Trip)
         location_count = await DatabaseTestUtils.count_records(db_session, Location)
-        
+
         assert user_count == 0
         assert trip_count == 0
         assert location_count == 0
-    
+
     @pytest.mark.asyncio
     async def test_database_isolation_between_tests(self, db_session: AsyncSession):
         """Test that tests are isolated from each other."""
@@ -96,23 +102,25 @@ class TestDatabaseConfiguration:
         user = User(
             email="isolation@test.com",
             username="isolationtest",
-            password_hash="hashedpassword"
+            password_hash="hashedpassword",
         )
         db_session.add(user)
         await db_session.commit()
-        
+
         # Verify user exists
         user_count = await DatabaseTestUtils.count_records(db_session, User)
         assert user_count == 1
-        
+
         # The fixture should clean up after this test
-    
+
     @pytest.mark.asyncio
     async def test_foreign_key_constraints(self, db_session: AsyncSession):
         """Test that foreign key constraints are enforced."""
-        constraints_working = await DatabaseTestUtils.verify_foreign_key_constraints(db_session)
+        constraints_working = await DatabaseTestUtils.verify_foreign_key_constraints(
+            db_session
+        )
         assert constraints_working
-    
+
     @pytest.mark.asyncio
     async def test_database_utils_clear_tables(self, db_session: AsyncSession):
         """Test the clear_all_tables utility function."""
@@ -120,14 +128,14 @@ class TestDatabaseConfiguration:
         user = User(email="test@clear.com", username="cleartest", password_hash="hash")
         db_session.add(user)
         await db_session.commit()
-        
+
         # Verify data exists
         user_count = await DatabaseTestUtils.count_records(db_session, User)
         assert user_count == 1
-        
+
         # Clear all data
         await DatabaseTestUtils.clear_all_tables(db_session)
-        
+
         # Verify data is gone
         user_count = await DatabaseTestUtils.count_records(db_session, User)
         assert user_count == 0

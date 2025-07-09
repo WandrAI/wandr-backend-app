@@ -1,11 +1,13 @@
 # ADR-002: Database Schema Design
 
 ## Status
+
 **ACCEPTED** - Travel domain database architecture
 
 ## Context
 
 Designing database schema for a travel application requiring:
+
 - **User management** with profiles and preferences
 - **Trip planning** with collaborative features and complex relationships
 - **Location data** with geographic queries and recommendations
@@ -17,16 +19,19 @@ Designing database schema for a travel application requiring:
 ### Alternatives Considered
 
 **Option 1: Single User Table**
+
 - Pros: Simple, fast queries, easy to understand
 - Cons: Large table, poor normalization, inflexible for travel profiles
 - Travel Context: Insufficient for complex travel preferences and group roles
 
 **Option 2: EAV (Entity-Attribute-Value) for Flexibility**
+
 - Pros: Maximum flexibility, easy to extend
 - Cons: Poor query performance, complex joins, type safety issues
 - Travel Context: Too flexible, loses travel domain structure
 
 **Option 3: Normalized User + Profile + Preferences** ✅ **CHOSEN**
+
 - Pros: Proper normalization, travel-specific structure, good performance
 - Cons: More complex schema, multiple joins
 - Travel Context: Perfect for travel domain with clear user/travel separation
@@ -38,16 +43,19 @@ Designing database schema for a travel application requiring:
 ### Alternatives Considered
 
 **Option 1: Embedded JSON for Trip Data**
+
 - Pros: Flexible schema, fewer joins, denormalized performance
 - Cons: Poor queryability, JSON maintenance, relationship complexity
 - Travel Context: Hard to query by location or shared trip data
 
 **Option 2: Fully Normalized with Separate Tables**
+
 - Pros: Perfect normalization, clear relationships, excellent queries
 - Cons: Many tables, complex joins, potential performance impact
 - Travel Context: Great for travel queries but potentially slow
 
 **Option 3: Hybrid Normalized + JSON for Flexible Data** ✅ **CHOSEN**
+
 - Pros: Core relationships normalized, flexible data in JSON, PostGIS support
 - Cons: Two patterns to maintain
 - Travel Context: Core travel data normalized, preferences/details in JSON
@@ -59,16 +67,19 @@ Designing database schema for a travel application requiring:
 ### Alternatives Considered
 
 **Option 1: Simple Trip Sharing with Basic Permissions**
+
 - Pros: Simple implementation, easy to understand
 - Cons: Limited collaboration features, poor role management
 - Travel Context: Insufficient for complex group travel planning
 
 **Option 2: Complex RBAC (Role-Based Access Control)**
+
 - Pros: Maximum flexibility, enterprise-grade permissions
 - Cons: Over-engineered, complex UI, slow performance
 - Travel Context: Too complex for typical travel group scenarios
 
 **Option 3: Trip-Scoped Roles with Activity Tracking** ✅ **CHOSEN**
+
 - Pros: Travel-specific roles, activity history, simple but flexible
 - Cons: Custom role system to maintain
 - Travel Context: Perfect for travel group dynamics (organizer, participant, viewer)
@@ -186,6 +197,7 @@ CREATE INDEX idx_ai_conversations_data ON ai_conversations USING GIN (conversati
 ## Consequences
 
 ### Positive
+
 - **Travel Domain Fit**: Schema directly supports travel application workflows
 - **Performance**: PostGIS for location queries, proper indexing, JSON for flexibility
 - **Scalability**: UUID primary keys, proper normalization, efficient indexes
@@ -193,20 +205,24 @@ CREATE INDEX idx_ai_conversations_data ON ai_conversations USING GIN (conversati
 - **Collaboration**: Built-in support for group travel planning and permissions
 
 ### Negative
+
 - **Complexity**: Hybrid normalized + JSON requires careful maintenance
 - **PostGIS Dependency**: Requires PostGIS extension for geographic features
 - **JSON Querying**: JSON fields require careful query optimization
 
 ### Risks & Mitigations
+
 - **JSON Performance**: Mitigated by proper GIN indexes and query patterns
 - **Schema Evolution**: Mitigated by Alembic migrations and JSON flexibility
 - **Geographic Performance**: Mitigated by PostGIS spatial indexes
 
 ## Related ADRs
+
 - [ADR-001: Backend Architecture Decisions](001-backend-architecture-decisions.md)
 - [ADR-003: API Security Implementation](003-api-security.md)
 
 ---
-**Date**: June 2025  
-**Status**: Accepted  
-**Decision Makers**: Backend Team 
+
+**Date**: June 2025
+**Status**: Accepted
+**Decision Makers**: Backend Team
