@@ -51,7 +51,7 @@
 # Run tests
 ./scripts/docker-dev.sh test
 
-# Format code (Black + Ruff)
+# Format code (Ruff)
 ./scripts/docker-dev.sh format
 
 # Run linting (Ruff + mypy)
@@ -85,7 +85,7 @@ alembic upgrade head                        # Apply migrations
 alembic revision --autogenerate -m "msg"   # Create new migration
 
 # Code quality
-black .                                     # Format code
+ruff format .                               # Format code
 ruff check --fix .                          # Fix linting issues
 ruff check .                                # Check linting
 mypy .                                      # Type checking
@@ -300,7 +300,7 @@ alembic upgrade head
 ### **Code Quality**
 
 - **Type hints**: Use throughout for better IDE support and validation (enforced by mypy)
-- **Code formatting**: Black for consistent formatting, Ruff for import sorting
+- **Code formatting**: Ruff for consistent formatting and import sorting
 - **Linting**: Ruff for comprehensive code quality checks
 - **Pre-commit hooks**: Automatic formatting and linting on commit
 - **Async patterns**: Prefer async/await for all I/O operations
