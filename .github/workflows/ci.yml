@@ -11,8 +11,40 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and export Docker image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: development
+        push: false
+        tags: wandr-backend:dev
+        outputs: type=docker,dest=/tmp/wandr-backend.tar
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Upload Docker image artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wandr-backend-image
+        path: /tmp/wandr-backend.tar
+        retention-days: 1
+
   test:
     runs-on: ubuntu-latest
+    needs: build
 
     services:
       postgres:
@@ -40,90 +72,83 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    - name: Download Docker image artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: wandr-backend-image
+        path: /tmp
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: development
-          push: false
-          tags: wandr-backend:dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    - name: Load Docker image
+      run: docker load --input /tmp/wandr-backend.tar
 
-      - name: Run database migrations
-        run: |
-          docker run --rm \
-            --network host \
-            -e DATABASE_URL=postgresql+asyncpg://wandr_user:wandr_password@localhost:5432/wandr_test_db \
-            wandr-backend:dev \
-            alembic upgrade head
+    - name: Run database migrations
+      run: |
+        docker run --rm \
+          --network host \
+          -e DATABASE_URL=postgresql+asyncpg://wandr_user:wandr_password@localhost:5432/wandr_test_db \
+          wandr-backend:dev \
+          alembic upgrade head
 
-      - name: Run tests with coverage
-        run: |
-          docker run --rm \
-            --network host \
-            -e DATABASE_URL=sqlite+aiosqlite:///:memory: \
-            -e REDIS_URL=redis://localhost:6379/1 \
-            -e SECRET_KEY=test-secret-key \
-            -e DEBUG=true \
-            -v ${{ github.workspace }}:/app \
-            wandr-backend:dev \
-            python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+    - name: Run tests with coverage
+      run: |
+        docker run --rm \
+          --network host \
+          -e DATABASE_URL=sqlite+aiosqlite:///:memory: \
+          -e REDIS_URL=redis://localhost:6379/1 \
+          -e SECRET_KEY=test-secret-key \
+          -e DEBUG=true \
+          -v ${{ github.workspace }}:/app \
+          wandr-backend:dev \
+          python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
 
   lint:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    - name: Download Docker image artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: wandr-backend-image
+        path: /tmp
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: development
-          push: false
-          tags: wandr-backend:dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    - name: Load Docker image
+      run: docker load --input /tmp/wandr-backend.tar
 
-      - name: Run formatting check
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            wandr-backend:dev \
-            ruff format --check .
+    - name: Run formatting check
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/app \
+          wandr-backend:dev \
+          ruff format --check .
 
-      - name: Run linting
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            wandr-backend:dev \
-            ruff check .
+    - name: Run linting
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/app \
+          wandr-backend:dev \
+          ruff check .
 
-      - name: Run type checking
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            wandr-backend:dev \
-            mypy .
+    - name: Run type checking
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/app \
+          wandr-backend:dev \
+          mypy .
 
   security:
     runs-on: ubuntu-latest
