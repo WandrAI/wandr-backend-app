@@ -76,6 +76,8 @@ This backend provides RESTful and GraphQL APIs for various client applications.
 - [x] Trip management CRUD operations
 - [x] User profile management
 - [x] Collaborative trip planning features
+- [x] Comprehensive testing framework with pytest
+- [x] CI/CD pipeline with GitHub Actions
 - [ ] AI chat interface and conversation handling
 - [ ] Travel recommendation engine
 - [ ] Location-based services integration
@@ -143,7 +145,7 @@ The fastest way to get started is using Docker, which provides a complete develo
 # Run tests
 ./scripts/docker-dev.sh test
 
-# Format code (Black + Ruff)
+# Format code (Ruff)
 ./scripts/docker-dev.sh format
 
 # Run linting (Ruff + mypy)
@@ -238,7 +240,7 @@ _Note: Docker provides a complete environment with PostgreSQL and Redis. For loc
 
 ```bash
 # Format code
-black .
+ruff format .
 ruff check --fix .
 
 # Check code quality
@@ -320,24 +322,28 @@ curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
 - ✅ **Redis Caching**: Fast caching and background task support
 - ✅ **Type Safety**: Full Pydantic validation
 - ✅ **Error Handling**: Comprehensive HTTP error responses
+- ✅ **CI/CD Pipeline**: Automated testing, linting, and security scanning
+- ✅ **Code Quality**: Ruff formatting, linting, and mypy type checking
+- ✅ **Comprehensive Testing**: Unit, integration, and database tests
 
 ## 📚 Documentation
 
 Comprehensive documentation following the mobile app's proven patterns:
 
 - **Architecture Decision Records**: `/docs/adr/` - Backend architectural decisions
-- **API Specifications**: `/docs/api/` - Detailed endpoint documentation
-- **Development Guide**: `/docs/development/` - Setup and development patterns
+- **Development Patterns**: `/docs/conventions/` - FastAPI patterns and best practices
 - **Docker Setup**: `DOCKER.md` - Complete Docker development and deployment guide
-- **Deployment Guide**: `/docs/deployment/` - Production deployment instructions
 - **Development Context**: `CLAUDE.md` - AI assistant context and quick reference
 
 ## 🧪 Testing Strategy
 
-- **Unit Tests**: Individual function and service testing
-- **Integration Tests**: API endpoint and database testing
-- **Load Testing**: Performance testing for travel peak loads
-- **AI Testing**: Conversation flow and recommendation accuracy testing
+- **Unit Tests**: Individual function and service testing with pytest
+- **Integration Tests**: API endpoint and database testing with async support
+- **Database Tests**: SQLAlchemy model validation and constraint testing
+- **Schema Tests**: Pydantic validation and serialization testing
+- **Authentication Tests**: JWT token validation and security testing
+- **CI/CD Testing**: Automated testing on every push and pull request
+- **Coverage Reporting**: Test coverage tracking with pytest-cov
 
 ## 🔒 Security
 
